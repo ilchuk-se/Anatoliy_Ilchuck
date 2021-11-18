@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -41,13 +42,13 @@ public class FilmOfferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/offer")
-    public FilmOffer createFilmOffer(@RequestBody FilmOffer filmOffer){
+    public FilmOffer createFilmOffer(@RequestBody @Valid FilmOffer filmOffer){
         return  filmOfferService.createFilmOffer(filmOffer);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/offer/{id}")
-    public FilmOffer updateFilmOffer(@PathVariable String id, @RequestBody FilmOffer filmOffer) throws FilmOfferControllerException {
+    public FilmOffer updateFilmOffer(@PathVariable String id, @RequestBody @Valid FilmOffer filmOffer) throws FilmOfferControllerException {
         FilmOffer filmOfferUpdated = null;
         try {
             int filmOfferId = Integer.parseInt(id);

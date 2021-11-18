@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -41,13 +42,13 @@ public class HallController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/hall")
-    public CinemaHall createHall(@RequestBody CinemaHall hall){
+    public CinemaHall createHall(@RequestBody @Valid CinemaHall hall){
         return  hallService.createHall(hall);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/hall/{id}")
-    public CinemaHall updateHall(@PathVariable String id, @RequestBody CinemaHall hall) throws HallControllerException {
+    public CinemaHall updateHall(@PathVariable String id, @RequestBody @Valid CinemaHall hall) throws HallControllerException {
         CinemaHall hallUpdated = null;
         try {
             int hallId = Integer.parseInt(id);

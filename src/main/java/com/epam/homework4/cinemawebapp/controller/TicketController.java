@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -41,13 +42,13 @@ public class TicketController{
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/ticket")
-    public Ticket createTicket(@RequestBody Ticket Ticket){
+    public Ticket createTicket(@RequestBody @Valid Ticket Ticket){
         return  ticketService.createTicket(Ticket);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/ticket/{id}")
-    public Ticket updateTicket(@PathVariable String id, @RequestBody Ticket Ticket) throws TicketControllerException {
+    public Ticket updateTicket(@PathVariable String id, @RequestBody @Valid Ticket Ticket) throws TicketControllerException {
         Ticket TicketUpdated = null;
         try {
             int TicketId = Integer.parseInt(id);
