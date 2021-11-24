@@ -6,13 +6,13 @@ import com.epam.homework4.cinemawebapp.model.Ticket;
 import java.util.List;
 
 public interface ITicketService {
-    Ticket getTicketById(int id);
+    Ticket getTicketById(Long id);
 
     List<Ticket> listTickets();
 
     Ticket createTicket(Ticket ticket);
 
-    Ticket updateTicket(int id, Ticket ticket);
+    Ticket updateTicket(Long id, Ticket ticket);
 
-    void deleteTicket(int id);
+    void deleteTicket(Long id);
 }

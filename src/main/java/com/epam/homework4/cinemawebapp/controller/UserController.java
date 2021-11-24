@@ -31,10 +31,10 @@ public class UserController {
     public UserDto getUserById(@PathVariable String id) throws UserControllerException{
         UserDto userDto = null;
         try {
-            int userId = Integer.parseInt(id);
+            Long userId = Long.parseLong(id);
             userDto = userService.getUserById(userId);
         }catch (NumberFormatException ex){
-            String message = "Can not cast user id to int";
+            String message = "Can not cast user id to Long";
             log.info(message);
             throw new UserControllerException(message, ex.getCause());
         }
@@ -58,7 +58,7 @@ public class UserController {
     public UserDto updateUser(@PathVariable String id, @RequestBody @Valid UserDto userDto) throws UserControllerException {
         UserDto userDtoUpdated = null;
         try {
-            int userId = Integer.parseInt(id);
+            Long userId = Long.parseLong(id);
             userDtoUpdated = userService.updateUser(userId, userDto);
         }catch (NumberFormatException ex){
             String message = "Can not cast user id to int";
@@ -71,7 +71,7 @@ public class UserController {
     @DeleteMapping(value = "/user/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) throws UserControllerException{
         try {
-            int userId = Integer.parseInt(id);
+            Long userId = Long.parseLong(id);
             userService.deleteUser(userId);
         }catch (NumberFormatException ex){
             String message = "Can not cast user id to int";

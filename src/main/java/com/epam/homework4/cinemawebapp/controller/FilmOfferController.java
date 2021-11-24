@@ -30,7 +30,7 @@ public class FilmOfferController {
     public FilmOffer getFilmOfferById(@PathVariable String id) throws FilmOfferControllerException {
         FilmOffer filmOffer = null;
         try {
-            int filmOfferId = Integer.parseInt(id);
+            Long filmOfferId = Long.parseLong(id);
             filmOffer = filmOfferService.getFilmOfferById(filmOfferId);
         }catch (NumberFormatException ex){
             String message = "Can not cast filmOffer id to int";
@@ -42,7 +42,7 @@ public class FilmOfferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/offer")
-    public FilmOffer createFilmOffer(@RequestBody @Valid FilmOffer filmOffer){
+    public FilmOffer createFilmOffer(@RequestBody FilmOffer filmOffer){
         return  filmOfferService.createFilmOffer(filmOffer);
     }
 
@@ -51,7 +51,7 @@ public class FilmOfferController {
     public FilmOffer updateFilmOffer(@PathVariable String id, @RequestBody @Valid FilmOffer filmOffer) throws FilmOfferControllerException {
         FilmOffer filmOfferUpdated = null;
         try {
-            int filmOfferId = Integer.parseInt(id);
+            Long filmOfferId = Long.parseLong(id);
             filmOfferUpdated = filmOfferService.updateFilmOffer(filmOfferId, filmOffer);
         }catch (NumberFormatException ex){
             String message = "Can not cast filmOffer id to int";
@@ -64,7 +64,7 @@ public class FilmOfferController {
     @DeleteMapping(value = "/offer/{id}")
     public ResponseEntity<Void> deleteFilmOffer(@PathVariable String id) throws FilmOfferControllerException {
         try {
-            int filmOfferId = Integer.parseInt(id);
+            Long filmOfferId = Long.parseLong(id);
             filmOfferService.deleteFilmOffer(filmOfferId);
         }catch (NumberFormatException ex){
             String message = "Can not cast filmOffer id to int";

@@ -30,7 +30,7 @@ public class HallController {
     public CinemaHall getHallById(@PathVariable String id) throws HallControllerException {
         CinemaHall hall = null;
         try {
-            int hallId = Integer.parseInt(id);
+            Long hallId = Long.parseLong(id);
             hall = hallService.getHallById(hallId);
         }catch (NumberFormatException ex){
             String message = "Can not cast hall id to int";
@@ -51,7 +51,7 @@ public class HallController {
     public CinemaHall updateHall(@PathVariable String id, @RequestBody @Valid CinemaHall hall) throws HallControllerException {
         CinemaHall hallUpdated = null;
         try {
-            int hallId = Integer.parseInt(id);
+            Long hallId = Long.parseLong(id);
             hallUpdated = hallService.updateHall(hallId, hall);
         }catch (NumberFormatException ex){
             String message = "Can not cast hall id to int";
@@ -64,7 +64,7 @@ public class HallController {
     @DeleteMapping(value = "/hall/{id}")
     public ResponseEntity<Void> deleteHall(@PathVariable String id) throws HallControllerException{
         try {
-            int hallId = Integer.parseInt(id);
+            Long hallId = Long.parseLong(id);
             hallService.deleteHall(hallId);
         }catch (NumberFormatException ex){
             String message = "Can not cast hall id to int";

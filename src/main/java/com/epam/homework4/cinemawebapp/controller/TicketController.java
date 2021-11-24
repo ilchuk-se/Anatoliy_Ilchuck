@@ -30,7 +30,7 @@ public class TicketController{
     public Ticket getTicketById(@PathVariable String id) throws TicketControllerException {
         Ticket Ticket = null;
         try {
-            int TicketId = Integer.parseInt(id);
+            Long TicketId = Long.parseLong(id);
             Ticket = ticketService.getTicketById(TicketId);
         }catch (NumberFormatException ex){
             String message = "Can not cast Ticket id to int";
@@ -51,7 +51,7 @@ public class TicketController{
     public Ticket updateTicket(@PathVariable String id, @RequestBody @Valid Ticket Ticket) throws TicketControllerException {
         Ticket TicketUpdated = null;
         try {
-            int TicketId = Integer.parseInt(id);
+            Long TicketId = Long.parseLong(id);
             TicketUpdated = ticketService.updateTicket(TicketId, Ticket);
         }catch (NumberFormatException ex){
             String message = "Can not cast Ticket id to int";
@@ -64,7 +64,7 @@ public class TicketController{
     @DeleteMapping(value = "/ticket/{id}")
     public ResponseEntity<Void> deleteTicket(@PathVariable String id) throws TicketControllerException {
         try {
-            int TicketId = Integer.parseInt(id);
+            Long TicketId = Long.parseLong(id);
             ticketService.deleteTicket(TicketId);
         } catch (NumberFormatException ex) {
             String message = "Can not cast Ticket id to int";

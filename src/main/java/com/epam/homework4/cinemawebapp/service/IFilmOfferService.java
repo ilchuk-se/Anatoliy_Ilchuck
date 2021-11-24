@@ -5,13 +5,13 @@ import com.epam.homework4.cinemawebapp.model.FilmOffer;
 import java.util.List;
 
 public interface IFilmOfferService {
-    FilmOffer getFilmOfferById(int id);
+    FilmOffer getFilmOfferById(Long id);
 
     List<FilmOffer> listFilmOffers();
 
     FilmOffer createFilmOffer(FilmOffer offer);
 
-    FilmOffer updateFilmOffer(int id, FilmOffer offer);
+    FilmOffer updateFilmOffer(Long id, FilmOffer offer);
 
-    void deleteFilmOffer(int id);
+    void deleteFilmOffer(Long id);
 }

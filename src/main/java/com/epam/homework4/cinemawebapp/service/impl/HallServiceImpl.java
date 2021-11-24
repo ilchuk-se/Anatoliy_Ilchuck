@@ -1,8 +1,10 @@
 package com.epam.homework4.cinemawebapp.service.impl;
 
 import com.epam.homework4.cinemawebapp.model.CinemaHall;
+import com.epam.homework4.cinemawebapp.model.Film;
 import com.epam.homework4.cinemawebapp.repository.IHallRepository;
 import com.epam.homework4.cinemawebapp.service.IHallService;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,32 +19,39 @@ public class HallServiceImpl implements IHallService{
     private final IHallRepository hallRepository;
 
     @Override
-    public CinemaHall getHallById(int id) {
+    public CinemaHall getHallById(Long id) {
         log.info("getHall by id {}", id);
-        return hallRepository.getHallById(id);
+        return hallRepository.findById(id).get();
     }
 
     @Override
     public List<CinemaHall> listHalls() {
         log.info("get all Halls");
-        return hallRepository.listHalls();
+
+        List<CinemaHall> allHalls = Lists.newArrayList(hallRepository.findAll());
+
+        return allHalls;
     }
 
     @Override
     public CinemaHall createHall(CinemaHall hall) {
         log.info("createUser with name {}", hall.getName());
-        return hallRepository.createHall(hall);
+        return hallRepository.save(hall);
     }
 
     @Override
-    public CinemaHall updateHall(int id, CinemaHall hall) {
+    public CinemaHall updateHall(Long id, CinemaHall hall) {
         log.info("updateUser with name {}", hall.getName());
-        return hallRepository.updateHall(id, hall);
+
+        CinemaHall hallToUpdate = hallRepository.findById(id).get();
+        hall.setId(hallToUpdate.getId());
+
+        return hallRepository.save(hall);
     }
 
     @Override
-    public void deleteHall(int id) {
+    public void deleteHall(Long id) {
         log.info("deleteHall with id {}", id);
-        hallRepository.deleteHall(id);
+        hallRepository.deleteById(id);
     }
 }

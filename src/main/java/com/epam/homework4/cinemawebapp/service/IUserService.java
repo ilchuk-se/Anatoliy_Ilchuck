@@ -6,7 +6,7 @@ import com.epam.homework4.cinemawebapp.model.User;
 import java.util.List;
 
 public interface IUserService {
-    UserDto getUserById(int id);
+    UserDto getUserById(Long id);
 
     UserDto getUserAuthorized(User user);
 
@@ -14,7 +14,7 @@ public interface IUserService {
 
     UserDto createUser(User user);
 
-    UserDto updateUser(int id, UserDto userDto);
+    UserDto updateUser(Long id, UserDto userDto);
 
-    void deleteUser(int id);
+    void deleteUser(Long id);
 }

@@ -13,9 +13,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class UserDto {
 
-    @NotNull
-    @Min(0)
-    private int id;
+    private Long id;
 
     @NotNull
     @Size(min=6)
@@ -24,6 +22,5 @@ public class UserDto {
     @NotNull
     private String name;
 
-    @NotNull
     private String roleName;
 }
