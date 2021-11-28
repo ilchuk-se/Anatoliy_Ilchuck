@@ -68,6 +68,7 @@ public class UserController {
         return userDtoUpdated;
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/user/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) throws UserControllerException{
         try {

@@ -32,7 +32,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(IndexOutOfBoundsException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Error IndexOutOfBoundsException(IndexOutOfBoundsException ex){
+    public Error handleIndexOutOfBoundsException(IndexOutOfBoundsException ex){
         log.error("handleIndexOutOfBoundsException: exception {}", ex.getMessage(), ex);
         return new Error(ex.getMessage());
     }

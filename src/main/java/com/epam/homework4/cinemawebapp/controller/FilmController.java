@@ -18,6 +18,7 @@ import java.util.List;
 public class FilmController {
 
     private final IFilmService filmService;
+    private static final String message = "Can not cast film id to int";
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/film")
@@ -33,7 +34,6 @@ public class FilmController {
             Long filmId = Long.parseLong(id);
             film = filmService.getFilmById(filmId);
         }catch (NumberFormatException ex){
-            String message = "Can not cast film id to int";
             log.info(message);
             throw new FilmControllerException(message, ex.getCause());
         }
@@ -54,7 +54,6 @@ public class FilmController {
             Long filmId = Long.parseLong(id);
             filmUpdated = filmService.updateFilm(filmId, film);
         }catch (NumberFormatException ex){
-            String message = "Can not cast film id to int";
             log.info(message);
             throw new FilmControllerException(message, ex.getCause());
         }
@@ -67,7 +66,6 @@ public class FilmController {
             Long filmId = Long.parseLong(id);
             filmService.deleteFilm(filmId);
         }catch (NumberFormatException ex){
-            String message = "Can not cast film id to int";
             log.info(message);
             throw new FilmControllerException(message, ex.getCause());
         }
