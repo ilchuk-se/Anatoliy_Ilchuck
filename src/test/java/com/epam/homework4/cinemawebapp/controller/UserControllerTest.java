@@ -1,10 +1,12 @@
 package com.epam.homework4.cinemawebapp.controller;
 
+import com.epam.homework4.cinemawebapp.dto.UserAuthDto;
 import com.epam.homework4.cinemawebapp.dto.UserDto;
 import com.epam.homework4.cinemawebapp.mapper.UserMapper;
 import com.epam.homework4.cinemawebapp.model.User;
 import com.epam.homework4.cinemawebapp.service.IUserService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = UserController.class)
 @AutoConfigureMockMvc
 @Import(TestWebConfig.class)
-public class UserControllerTest {
+class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,48 +35,66 @@ public class UserControllerTest {
     @MockBean
     private IUserService userService;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private final Long id = Long.parseLong("1");
-    private final String login = "login";
-    private final String password = "password";
+    private final String password = "ae146jj2843h123";
 
     @Test
     void getUserByIdTest() throws Exception{
         //given
-        UserDto userDto = UserDto
-                .builder()
-                .name("TESTNAME")
-                .id(id)
-                .build();
+        User userInDb = new User();
+        userInDb.setId(id);
 
-        when(userService.getUserById(id)).thenReturn(userDto);
+        when(userService.getUserById(id)).thenReturn(userInDb);
 
         //when
         mockMvc.perform(get("/user/" + id))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(userDto.getName()));
+                .andExpect(jsonPath("$.id").value(userInDb.getId().toString()));
 
         //then
         verify(userService, times(1)).getUserById(id);
     }
 
     @Test
+    void userAuthTest() throws Exception{
+        //given
+        final String login = "some@gmail.com";
+        UserAuthDto requestBodyUserAuthDto = new UserAuthDto(login, password);
+
+        User userInDb = new User();
+        userInDb.setId(id);
+        userInDb.setPassword(password);
+        userInDb.setLogin(login);
+
+        when(userService.getUserAuthorized(login, password)).thenReturn(userInDb);
+
+        //when
+        mockMvc.perform(get("/sign").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBodyUserAuthDto)))
+                //.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.login").value(requestBodyUserAuthDto.getLogin()));
+    }
+
+    @Test
     void getAllUsersTest() throws Exception{
         //given
-        UserDto userDto = UserDto
-                .builder()
-                .name("TESTNAME")
-                .build();
+        User userInDb = new User();
+        userInDb.setId(id);
 
-        when(userService.listUsers()).thenReturn(Collections.singletonList(userDto));
+        when(userService.listUsers()).thenReturn(Collections.singletonList(userInDb));
 
         //when
         mockMvc.perform(get("/user"))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].name").value(userDto.getName()));;
+                .andExpect(jsonPath("$[0].id").value(userInDb.getId().toString()));
 
         //then
         verify(userService, times(1)).listUsers();
@@ -85,31 +105,23 @@ public class UserControllerTest {
         //given
         User userToCreate = new User();
         userToCreate.setLogin("some@mail.com");
-        userToCreate.setPassword("somePass");
+        userToCreate.setPassword(password);
         userToCreate.setId(null);
         userToCreate.setName("userName");
         userToCreate.setRoleId(1);
         userToCreate.setRoleName("user");
 
-        UserDto createdUserDto = UserMapper.INSTANCE.mapUserDto(userToCreate);
+        UserDto requestBodyUserDto = UserMapper.INSTANCE.mapUserDto(userToCreate);
 
-        when(userService.createUser(userToCreate)).thenReturn(createdUserDto);
+        when(userService.createUser(userToCreate)).thenReturn(userToCreate);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"login\":\"some@mail.com\",\n" +
-                "    \"name\":\"userName\",\n" +
-                "    \"password\":\"somePass\",\n" +
-                "    \"roleName\":\"user\",\n" +
-                "    \"roleId\":\"1\"\n" +
-                "}";
         //when
-        mockMvc.perform(post("/user").contentType(MediaType.APPLICATION_JSON)
-                .content(requestBodyJson))
+        mockMvc.perform(post("/user?password=" + password).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBodyUserDto)))
                 //.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(createdUserDto.getName()));
+                .andExpect(jsonPath("$.name").value(userToCreate.getName()));
 
         //then
         verify(userService, times(1)).createUser(userToCreate);
@@ -122,23 +134,19 @@ public class UserControllerTest {
         userToUpdate.setLogin("newSome@mail.com");
         userToUpdate.setName("newUserName");
 
-        UserDto updatedUserDto = UserMapper.INSTANCE.mapUserDto(userToUpdate);
+        UserDto requestBodyUserDto = UserMapper.INSTANCE.mapUserDto(userToUpdate);
 
-        when(userService.updateUser(id, updatedUserDto)).thenReturn(updatedUserDto);
+        when(userService.updateUser(id, userToUpdate)).thenReturn(userToUpdate);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"login\":\"newSome@mail.com\",\n" +
-                "    \"name\":\"newUserName\"\n" +
-                "}";
         //when
-        mockMvc.perform(put("/user/" + id).contentType(MediaType.APPLICATION_JSON).content(requestBodyJson))
+        mockMvc.perform(put("/user/" + id).contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(requestBodyUserDto)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(updatedUserDto.getName()));
+                .andExpect(jsonPath("$.name").value(requestBodyUserDto.getName()));
 
         //then
-        verify(userService, times(1)).updateUser(id, updatedUserDto);
+        verify(userService, times(1)).updateUser(id, userToUpdate);
     }
 
     @Test

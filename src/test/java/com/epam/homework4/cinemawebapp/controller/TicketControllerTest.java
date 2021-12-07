@@ -1,8 +1,13 @@
 package com.epam.homework4.cinemawebapp.controller;
 
+import com.epam.homework4.cinemawebapp.dto.FilmOfferDto;
+import com.epam.homework4.cinemawebapp.dto.TicketDto;
+import com.epam.homework4.cinemawebapp.dto.UserDto;
+import com.epam.homework4.cinemawebapp.mapper.TicketMapper;
 import com.epam.homework4.cinemawebapp.model.Ticket;
 import com.epam.homework4.cinemawebapp.service.ITicketService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 
 import static org.mockito.Mockito.*;
@@ -22,13 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = TicketController.class)
 @AutoConfigureMockMvc
 @Import(TestWebConfig.class)
-public class TicketControllerTest {
+class TicketControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private ITicketService ticketService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Long id = Long.parseLong("1");
 
@@ -73,56 +81,54 @@ public class TicketControllerTest {
     @Test
     void createTicketTest() throws Exception{
         //given
-        Ticket ticketToCreate = new Ticket();
-        ticketToCreate.setPlace(10);
+        TicketDto requestBodyTicketDtoToCreate = new TicketDto();
+        requestBodyTicketDtoToCreate.setPlace(10);
+        requestBodyTicketDtoToCreate.setOffer(new FilmOfferDto());
+        requestBodyTicketDtoToCreate.setUser(new UserDto());
+        requestBodyTicketDtoToCreate.setPlace(10);
+        requestBodyTicketDtoToCreate.setPrice(BigDecimal.ZERO);
 
-        when(ticketService.createTicket(ticketToCreate)).thenReturn(ticketToCreate);
+        Ticket createdTicket = TicketMapper.INSTANCE.mapTicket(requestBodyTicketDtoToCreate);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"id\": \"0\",\n" +
-                "    \"userId\": \"0\",\n" +
-                "    \"offerId\": \"0\",\n" +
-                "    \"place\": \"10\",\n" +
-                "    \"price\": \"140.0\"\n" +
-                "}";
+        when(ticketService.createTicket(createdTicket)).thenReturn(createdTicket);
 
         //when
-        mockMvc.perform(post("/ticket").contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBodyJson))
+        mockMvc.perform(post("/ticket")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBodyTicketDtoToCreate)))
                 //.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.place").value(ticketToCreate.getPlace()));
+                .andExpect(jsonPath("$.place").value(createdTicket.getPlace()));
 
         //then
-        verify(ticketService, times(1)).createTicket(ticketToCreate);
+        verify(ticketService, times(1)).createTicket(createdTicket);
     }
 
     @Test
     void updateTicketTest() throws Exception{
         //given
-        Ticket TicketToUpdate = new Ticket();
-        TicketToUpdate.setPlace(15);
+        TicketDto requestBodyTicketDtoToCreate = new TicketDto();
+        requestBodyTicketDtoToCreate.setPlace(10);
+        requestBodyTicketDtoToCreate.setOffer(new FilmOfferDto());
+        requestBodyTicketDtoToCreate.setUser(new UserDto());
+        requestBodyTicketDtoToCreate.setPlace(10);
+        requestBodyTicketDtoToCreate.setPrice(BigDecimal.ZERO);
 
-        when(ticketService.updateTicket(id, TicketToUpdate)).thenReturn(TicketToUpdate);
+        Ticket updatedTicket = TicketMapper.INSTANCE.mapTicket(requestBodyTicketDtoToCreate);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"id\": \"1\",\n" +
-                "    \"userId\": \"1\",\n" +
-                "    \"offerId\": \"1\",\n" +
-                "    \"place\": \"15\",\n" +
-                "    \"price\": \"140.0\"\n" +
-                "}";
+        when(ticketService.updateTicket(id, updatedTicket)).thenReturn(updatedTicket);
+
         //when
-        mockMvc.perform(put("/ticket/" + id).contentType(MediaType.APPLICATION_JSON).content(requestBodyJson))
+        mockMvc.perform(put("/ticket/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBodyTicketDtoToCreate)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.place").value(TicketToUpdate.getPlace()));
+                .andExpect(jsonPath("$.place").value(updatedTicket.getPlace()));
 
         //then
-        verify(ticketService, times(1)).updateTicket(id, TicketToUpdate);
+        verify(ticketService, times(1)).updateTicket(id, updatedTicket);
     }
 
     @Test

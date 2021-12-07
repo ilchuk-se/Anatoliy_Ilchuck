@@ -1,8 +1,11 @@
 package com.epam.homework4.cinemawebapp.controller;
 
+import com.epam.homework4.cinemawebapp.dto.CinemaHallDto;
+import com.epam.homework4.cinemawebapp.mapper.CinemaHallMapper;
 import com.epam.homework4.cinemawebapp.model.CinemaHall;
 import com.epam.homework4.cinemawebapp.service.IHallService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,13 +25,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = HallController.class)
 @AutoConfigureMockMvc
 @Import(TestWebConfig.class)
-public class HallControllerTest {
+class HallControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private IHallService hallService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Long id = Long.parseLong("1");
     private final String name = "SomeHall";
@@ -68,7 +73,7 @@ public class HallControllerTest {
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].name").value(hall.getName()));;
+                .andExpect(jsonPath("$[0].name").value(hall.getName()));
 
         //then
         verify(hallService, times(1)).listHalls();
@@ -77,59 +82,50 @@ public class HallControllerTest {
     @Test
     void createHallTest() throws Exception{
         //given
-        CinemaHall hallToCreate = new CinemaHall();
-        hallToCreate.setName(name);
-        hallToCreate.setId(id);
-        hallToCreate.setSize(size);
-        hallToCreate.setSchemeImageDir(schemeImageDir);
+        CinemaHallDto requestBodyHallDtoToCreate = new CinemaHallDto();
+        requestBodyHallDtoToCreate.setName(name);
+        requestBodyHallDtoToCreate.setSize(size);
+        requestBodyHallDtoToCreate.setSchemeImageDir(schemeImageDir);
 
-        when(hallService.createHall(hallToCreate)).thenReturn(hallToCreate);
+        CinemaHall createdHall = CinemaHallMapper.INSTANCE.mapCinemaHall(requestBodyHallDtoToCreate);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"id\": \"1\",\n" +
-                "    \"size\": \"40\",\n" +
-                "    \"schemeImageDir\": \"folder/scheme/image.img\",\n" +
-                "    \"name\": \"SomeHall\"\n" +
-                "}";
+        when(hallService.createHall(createdHall)).thenReturn(createdHall);
 
         //when
-        mockMvc.perform(post("/hall").contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBodyJson))
+        mockMvc.perform(post("/hall")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBodyHallDtoToCreate)))
                 //.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(hallToCreate.getName()));
+                .andExpect(jsonPath("$.name").value(createdHall.getName()));
 
         //then
-        verify(hallService, times(1)).createHall(hallToCreate);
+        verify(hallService, times(1)).createHall(createdHall);
     }
 
     @Test
     void updateHallTest() throws Exception{
         //given
-        CinemaHall hallToUpdate = new CinemaHall();
-        hallToUpdate.setSize(45);
-        hallToUpdate.setName("SomeHall2");
-        hallToUpdate.setSchemeImageDir("folder/scheme/image.img");
-        hallToUpdate.setId(id);
+        CinemaHallDto requestBodyHallDtoToUpdate = new CinemaHallDto();
+        requestBodyHallDtoToUpdate.setSize(45);
+        requestBodyHallDtoToUpdate.setName("SomeHall2");
+        requestBodyHallDtoToUpdate.setSchemeImageDir("folder/scheme/image.img");
 
-        when(hallService.updateHall(id, hallToUpdate)).thenReturn(hallToUpdate);
+        CinemaHall updatedHall = CinemaHallMapper.INSTANCE.mapCinemaHall(requestBodyHallDtoToUpdate);
 
-        String requestBodyJson =
-                "{\n" + "\"id\": \"1\"," +
-                "    \"size\": \"45\",\n" +
-                "    \"schemeImageDir\": \"folder/scheme/image.img\",\n" +
-                "    \"name\": \"SomeHall2\"\n" +
-                "}";
+        when(hallService.updateHall(id, updatedHall)).thenReturn(updatedHall);
+
         //when
-        mockMvc.perform(put("/hall/" + id).contentType(MediaType.APPLICATION_JSON).content(requestBodyJson))
+        mockMvc.perform(put("/hall/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBodyHallDtoToUpdate)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(hallToUpdate.getName()));
+                .andExpect(jsonPath("$.name").value(updatedHall.getName()));
 
         //then
-        verify(hallService, times(1)).updateHall(id, hallToUpdate);
+        verify(hallService, times(1)).updateHall(id, updatedHall);
     }
 
     @Test

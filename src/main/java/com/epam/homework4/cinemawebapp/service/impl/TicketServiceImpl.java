@@ -1,5 +1,6 @@
 package com.epam.homework4.cinemawebapp.service.impl;
 
+import com.epam.homework4.cinemawebapp.businesslogic.OptionalChecker;
 import com.epam.homework4.cinemawebapp.model.CinemaHall;
 import com.epam.homework4.cinemawebapp.model.Ticket;
 import com.epam.homework4.cinemawebapp.repository.ITicketRepository;
@@ -20,11 +21,15 @@ import java.util.List;
 public class TicketServiceImpl implements ITicketService {
 
     private final ITicketRepository ticketRepository;
+    private final OptionalChecker<Ticket> ticketOptionalChecker = new OptionalChecker<>();
 
     @Override
     public Ticket getTicketById(Long id) {
         log.info("getTicket by id {}", id);
-        return ticketRepository.findById(id).get();
+        return ticketOptionalChecker.getValueIfPresent(
+                        ticketRepository.findById(id),
+                "Ticket with id: " + id + " was not found."
+        );
     }
 
     @Override
@@ -38,19 +43,19 @@ public class TicketServiceImpl implements ITicketService {
     }
 
     @Override
-    public Ticket createTicket(Ticket Ticket) {
-        log.info("createTicket with id {}", Ticket.getId());
-        return ticketRepository.save(Ticket);
+    public Ticket createTicket(Ticket ticket) {
+        log.info("createTicket with id {}", ticket.getId());
+        return ticketRepository.save(ticket);
     }
 
     @Override
-    public Ticket updateTicket(Long id, Ticket Ticket) {
-        log.info("updateTicket with id {}", Ticket.getId());
+    public Ticket updateTicket(Long id, Ticket ticket) {
+        log.info("updateTicket with id {}", ticket.getId());
 
-        Ticket ticketToUpdate = ticketRepository.findById(id).get();
-        Ticket.setId(ticketToUpdate.getId());
+        Ticket ticketToUpdate = getTicketById(id);
+        ticket.setId(ticketToUpdate.getId());
 
-        return ticketRepository.save(Ticket);
+        return ticketRepository.save(ticket);
     }
 
     @Override

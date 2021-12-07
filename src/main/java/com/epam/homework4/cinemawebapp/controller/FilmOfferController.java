@@ -1,6 +1,7 @@
 package com.epam.homework4.cinemawebapp.controller;
 
-import com.epam.homework4.cinemawebapp.exception.FilmOfferControllerException;
+import com.epam.homework4.cinemawebapp.dto.FilmOfferDto;
+import com.epam.homework4.cinemawebapp.mapper.FilmOfferMapper;
 import com.epam.homework4.cinemawebapp.model.FilmOffer;
 import com.epam.homework4.cinemawebapp.service.IFilmOfferService;
 import lombok.RequiredArgsConstructor;
@@ -21,57 +22,41 @@ public class FilmOfferController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/offer")
-    public List<FilmOffer> getAllFilmOffers() {
-        return  filmOfferService.listFilmOffers();
+    public List<FilmOfferDto> getAllFilmOffers() {
+        return FilmOfferMapper.INSTANCE.mapFilmOfferDtos(
+                filmOfferService.listFilmOffers()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/offer/{id}")
-    public FilmOffer getFilmOfferById(@PathVariable String id) throws FilmOfferControllerException {
-        FilmOffer filmOffer = null;
-        try {
-            Long filmOfferId = Long.parseLong(id);
-            filmOffer = filmOfferService.getFilmOfferById(filmOfferId);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast filmOffer id to int";
-            log.info(message);
-            throw new FilmOfferControllerException(message, ex.getCause());
-        }
-        return filmOffer;
+    public FilmOfferDto getFilmOfferById(@PathVariable Long id) {
+        return FilmOfferMapper.INSTANCE.mapFilmOfferDto(
+                filmOfferService.getFilmOfferById(id)
+        );
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/offer")
-    public FilmOffer createFilmOffer(@RequestBody FilmOffer filmOffer){
-        return  filmOfferService.createFilmOffer(filmOffer);
+    public FilmOfferDto createFilmOffer(@RequestBody FilmOfferDto filmOfferDto){
+        FilmOffer filmOfferDateToCreate = FilmOfferMapper.INSTANCE.mapFilmOffer(filmOfferDto);
+        return FilmOfferMapper.INSTANCE.mapFilmOfferDto(
+                filmOfferService.createFilmOffer(filmOfferDateToCreate)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/offer/{id}")
-    public FilmOffer updateFilmOffer(@PathVariable String id, @RequestBody @Valid FilmOffer filmOffer) throws FilmOfferControllerException {
-        FilmOffer filmOfferUpdated = null;
-        try {
-            Long filmOfferId = Long.parseLong(id);
-            filmOfferUpdated = filmOfferService.updateFilmOffer(filmOfferId, filmOffer);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast filmOffer id to int";
-            log.info(message);
-            throw new FilmOfferControllerException(message, ex.getCause());
-        }
-        return filmOfferUpdated;
+    public FilmOfferDto updateFilmOffer(@PathVariable Long id, @RequestBody @Valid FilmOfferDto filmOfferDto) {
+        FilmOffer filmOffer = FilmOfferMapper.INSTANCE.mapFilmOffer(filmOfferDto);
+        return FilmOfferMapper.INSTANCE.mapFilmOfferDto(
+                filmOfferService.updateFilmOffer(id, filmOffer)
+        );
     }
 
     @DeleteMapping(value = "/offer/{id}")
-    public ResponseEntity<Void> deleteFilmOffer(@PathVariable String id) throws FilmOfferControllerException {
-        try {
-            Long filmOfferId = Long.parseLong(id);
-            filmOfferService.deleteFilmOffer(filmOfferId);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast filmOffer id to int";
-            log.info(message);
-            throw new FilmOfferControllerException(message, ex.getCause());
-        }
-
+    public ResponseEntity<Void> deleteFilmOffer(@PathVariable Long id) {
+        filmOfferService.deleteFilmOffer(id);
         return ResponseEntity.noContent().build();
     }
 }

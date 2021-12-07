@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -41,13 +41,11 @@ public class UserServiceImplTest {
         Optional<User> expectedUserOptional = Optional.of(expectedUser);
 
         when(userRepository.findById(id)).thenReturn(expectedUserOptional);
-
-        UserDto expectedUserDto = UserDto.builder().id(id).build();
         //when
-        UserDto actualUserDto = userService.getUserById(id);
+        User actualUser = userService.getUserById(id);
 
         //then
-        assertEquals(expectedUserDto, actualUserDto);
+        assertEquals(expectedUser, actualUser);
         verify(userRepository, times(1)).findById(id);
     }
 
@@ -58,15 +56,13 @@ public class UserServiceImplTest {
         userToAuth.setLogin(login);
         userToAuth.setPassword(password);
 
-        UserDto expectedUserDto = UserDto.builder().login(login).build();
-
         when(userRepository.findByLoginAndPassword(login, password)).thenReturn(userToAuth);
 
         //when
-        UserDto actualUserDto = userService.getUserAuthorized(userToAuth);
+        User actualUser = userService.getUserAuthorized(login, password);
 
         //then
-        assertEquals(expectedUserDto, actualUserDto);
+        assertEquals(actualUser, userToAuth);
         verify(userRepository, times(1)).findByLoginAndPassword(login, password);
     }
 
@@ -79,20 +75,15 @@ public class UserServiceImplTest {
         List<User> expectedUsers = new ArrayList<>();
         expectedUsers.add(user);
 
-        user.setId(Long.parseLong("2"));
-        expectedUsers.add(user);
-
-        List<UserDto> expectedUserDtos = UserMapper.INSTANCE.mapUserDtos(expectedUsers);
-
         Iterable<User> expectedUserIterable = expectedUsers;
 
         when(userRepository.findAll()).thenReturn(expectedUserIterable);
 
         //when
-        List<UserDto> actualUserDtos = userService.listUsers();
+        List<User> actualUsers = userService.listUsers();
 
         //then
-        assertEquals(actualUserDtos, expectedUserDtos);
+        assertEquals(actualUsers, expectedUsers);
         verify(userRepository, times(1)).findAll();
     }
 
@@ -106,11 +97,11 @@ public class UserServiceImplTest {
         when(userRepository.save(userToCreate)).thenReturn(userToCreate);
 
         //when
-        UserDto createdUserDto = userService.createUser(userToCreate);
+        User createdUser = userService.createUser(userToCreate);
 
         //then
+        assertEquals(createdUser, userToCreate);
         verify(userRepository, times(1)).save(userToCreate);
-        assertEquals(createdUserDto, UserMapper.INSTANCE.mapUserDto(userToCreate));
     }
 
     @Test
@@ -122,32 +113,30 @@ public class UserServiceImplTest {
 
         when(userRepository.findById(id)).thenReturn(userInDbOptional);
 
-        UserDto dataToUpdate = UserDto
-                .builder()
-                .login("newlogin")
-                .build();
+        User userDataToUpdate = new User();
+        userDataToUpdate.setId(id);
+        userDataToUpdate.setLogin("newlogin");
 
-        User updatedUser = new User();
-        updatedUser.setId(id);
-        updatedUser.setLogin("newlogin");
-
-        when(userRepository.save(updatedUser)).thenReturn(updatedUser);
+        when(userRepository.save(userDataToUpdate)).thenReturn(userDataToUpdate);
 
         //when
-        UserDto createdUserDto = userService.updateUser(id, dataToUpdate);
+        User updatedUser = userService.updateUser(id, userDataToUpdate);
 
         //then
-        verify(userRepository, times(1)).save(updatedUser);
+        verify(userRepository, times(1)).findById(id);
+        verify(userRepository, times(1)).save(userDataToUpdate);
+        assertEquals(userDataToUpdate, updatedUser);
     }
 
     @Test
     void updateUserTest_WhenUserNotExist(){
         //given
         when(userRepository.findById(id)).thenReturn(Optional.empty());
-        UserDto dataToUpdate = UserDto.builder().build();
+        User userDataToUpdate = new User();
 
         //then
-        assertThrows(NoSuchElementException.class, () -> userService.updateUser(id, dataToUpdate));
+        assertThrows(NoSuchElementException.class, () -> userService.updateUser(id, userDataToUpdate));
+        verify(userRepository, times(1)).findById(id);
     }
 
     @Test

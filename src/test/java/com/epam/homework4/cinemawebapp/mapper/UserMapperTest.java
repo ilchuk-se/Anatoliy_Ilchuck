@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserMapperTest {
+class UserMapperTest {
 
     private final Long id = Long.parseLong("1");
     private final String login = "login";
@@ -25,7 +25,7 @@ public class UserMapperTest {
         userToTest.setRoleId(roleId);
         userToTest.setRoleName(roleName);
 
-        UserDto expectedUserDto = new UserDto(id, login, name, roleName);
+        UserDto expectedUserDto = new UserDto(id, login, name, roleId, roleName);
 
         UserDto userDto = UserMapper.INSTANCE.mapUserDto(userToTest);
         assertEquals(userDto, expectedUserDto);
@@ -33,7 +33,7 @@ public class UserMapperTest {
 
     @Test
     void mapUserTest(){
-        UserDto userDtoToTest = new UserDto(id, login, name, roleName);
+        UserDto userDtoToTest = new UserDto(id, login, name, roleId, roleName);
 
         User expectedUser = new User();
         expectedUser.setName(name);

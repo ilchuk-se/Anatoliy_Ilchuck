@@ -1,6 +1,5 @@
 package com.epam.homework4.cinemawebapp.service;
 
-import com.epam.homework4.cinemawebapp.dto.UserDto;
 import com.epam.homework4.cinemawebapp.model.CinemaHall;
 
 import java.util.List;

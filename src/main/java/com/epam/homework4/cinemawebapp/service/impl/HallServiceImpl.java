@@ -1,5 +1,6 @@
 package com.epam.homework4.cinemawebapp.service.impl;
 
+import com.epam.homework4.cinemawebapp.businesslogic.OptionalChecker;
 import com.epam.homework4.cinemawebapp.model.CinemaHall;
 import com.epam.homework4.cinemawebapp.model.Film;
 import com.epam.homework4.cinemawebapp.repository.IHallRepository;
@@ -17,20 +18,23 @@ import java.util.List;
 public class HallServiceImpl implements IHallService{
 
     private final IHallRepository hallRepository;
+    private final OptionalChecker<CinemaHall> cinemaHallOptionalChecker = new OptionalChecker<>();
 
     @Override
     public CinemaHall getHallById(Long id) {
         log.info("getHall by id {}", id);
-        return hallRepository.findById(id).get();
+        return cinemaHallOptionalChecker.getValueIfPresent(
+                hallRepository.findById(id),
+                "Hall with id: " + id + " not found."
+        ) ;
     }
 
     @Override
     public List<CinemaHall> listHalls() {
         log.info("get all Halls");
-
-        List<CinemaHall> allHalls = Lists.newArrayList(hallRepository.findAll());
-
-        return allHalls;
+        return Lists.newArrayList(
+                hallRepository.findAll()
+        );
     }
 
     @Override
@@ -43,7 +47,10 @@ public class HallServiceImpl implements IHallService{
     public CinemaHall updateHall(Long id, CinemaHall hall) {
         log.info("updateUser with name {}", hall.getName());
 
-        CinemaHall hallToUpdate = hallRepository.findById(id).get();
+        CinemaHall hallToUpdate = cinemaHallOptionalChecker.getValueIfPresent(
+                hallRepository.findById(id),
+                "Hall with id: " + id + " not found and can not be updated."
+        );
         hall.setId(hallToUpdate.getId());
 
         return hallRepository.save(hall);

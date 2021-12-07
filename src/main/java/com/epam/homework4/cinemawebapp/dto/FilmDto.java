@@ -1,22 +1,19 @@
-package com.epam.homework4.cinemawebapp.model;
+package com.epam.homework4.cinemawebapp.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.sql.Time;
 
 @Data
 @NoArgsConstructor
-@Entity
-public class Film {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class FilmDto {
     private Long id;
 
+    @NotNull
+    @Size(min=1)
     private String originalName;
 
     @NotNull
@@ -29,6 +26,7 @@ public class Film {
 
     private float imdbRating;
 
+    @NotNull
     private Time timekeeping;
 
     private String posterImageDir;

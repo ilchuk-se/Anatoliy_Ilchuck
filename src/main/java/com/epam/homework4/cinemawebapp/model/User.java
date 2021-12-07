@@ -2,10 +2,8 @@ package com.epam.homework4.cinemawebapp.model;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -16,8 +14,11 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(unique = true)
+    @Size(min = 5)
     private String login;
 
+    @Size(min = 5)
     private String password;
 
     private String name;

@@ -1,9 +1,9 @@
-package com.epam.homework4.cinemawebapp.model;
+package com.epam.homework4.cinemawebapp.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
@@ -11,10 +11,8 @@ import java.sql.Time;
 
 @Data
 @NoArgsConstructor
-@Entity
-public class FilmOffer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+@AllArgsConstructor
+public class FilmOfferDto {
     private Long id;
 
     @NotNull
@@ -28,9 +26,7 @@ public class FilmOffer {
     private float price;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name= "film_id")
-    private Film film;
+    private FilmDto film;
 
     @NotNull
     @Min(0)

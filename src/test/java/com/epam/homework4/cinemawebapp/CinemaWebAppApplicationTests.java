@@ -22,7 +22,10 @@ class CinemaWebAppApplicationTests {
 
 	@Test
 	void contextLoads() {
-		HttpStatus statusCode = restTemplate.getForEntity("http://localhost:" + port + "/swagger-ui.html", String.class).getStatusCode();
-		assertEquals(statusCode, HttpStatus.OK);
+		HttpStatus statusCode = restTemplate
+				.getForEntity("http://localhost:" + port + "/swagger-ui.html", String.class)
+				.getStatusCode();
+
+		assertEquals(HttpStatus.OK, statusCode);
 	}
 }

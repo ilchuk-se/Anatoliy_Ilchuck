@@ -5,24 +5,29 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import java.math.BigDecimal;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class TicketDto {
 
     private Long id;
 
     @NotNull
-    @Size(min=6)
-    private String login;
+    private UserDto user;
 
     @NotNull
-    private String name;
+    private FilmOfferDto offer;
 
-    private int roleId;
-    private String roleName;
+    @NotNull
+    @Min(0)
+    private int place;
+
+    @NotNull
+    @Min(0)
+    private BigDecimal price;
 }

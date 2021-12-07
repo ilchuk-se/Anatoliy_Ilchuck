@@ -1,8 +1,12 @@
 package com.epam.homework4.cinemawebapp.controller;
 
+import com.epam.homework4.cinemawebapp.dto.FilmDto;
+import com.epam.homework4.cinemawebapp.dto.FilmOfferDto;
+import com.epam.homework4.cinemawebapp.mapper.FilmOfferMapper;
 import com.epam.homework4.cinemawebapp.model.FilmOffer;
 import com.epam.homework4.cinemawebapp.service.IFilmOfferService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,12 +28,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(value = FilmOfferController.class)
 @AutoConfigureMockMvc
 @Import(TestWebConfig.class)
-public class FilmOfferControllerTest {
+class FilmOfferControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private IFilmOfferService filmOfferService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final Long id = Long.parseLong("1");
     private final Date date = Date.valueOf("2023-12-22");
@@ -75,64 +81,51 @@ public class FilmOfferControllerTest {
     @Test
     void createFilmOfferTest() throws Exception{
         //given
-        FilmOffer filmOfferToCreate = new FilmOffer();
-        filmOfferToCreate.setId(id);
-        filmOfferToCreate.setDate(date);
-        filmOfferToCreate.setTime(Time.valueOf("17:00:00"));
+        FilmOfferDto requestBodyFilmOfferDtoToCreate = new FilmOfferDto();
+        requestBodyFilmOfferDtoToCreate.setDate(date);
+        requestBodyFilmOfferDtoToCreate.setTime(Time.valueOf("17:00:00"));
 
-        when(filmOfferService.createFilmOffer(filmOfferToCreate)).thenReturn(filmOfferToCreate);
+        FilmOffer createdFilmOffer = FilmOfferMapper.INSTANCE.mapFilmOffer(requestBodyFilmOfferDtoToCreate);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"id\": \"1\",\n" +
-                "    \"date\": \"2023-12-22\",\n" +
-                "    \"time\": \"17:00:00\",\n" +
-                "    \"price\": \"140\",\n" +
-                "    \"film\": {\n" +
-                "        \"id\" : \"1\"\n" +
-                "    },\n" +
-                "    \"hallId\": \"0\"\n" +
-                "}";
+        when(filmOfferService.createFilmOffer(createdFilmOffer)).thenReturn(createdFilmOffer);
 
         //when
         mockMvc.perform(post("/offer" ).contentType(MediaType.APPLICATION_JSON)
-                        .content(requestBodyJson))
+                        .content(objectMapper.writeValueAsString(requestBodyFilmOfferDtoToCreate)))
                 //.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.date").value(filmOfferToCreate.getDate().toString()));
+                .andExpect(jsonPath("$.date").value(createdFilmOffer.getDate().toString()));
 
         //then
-        verify(filmOfferService, times(1)).createFilmOffer(filmOfferToCreate);
+        verify(filmOfferService, times(1)).createFilmOffer(createdFilmOffer);
     }
 
     @Test
     void updateFilmOfferTest() throws Exception{
         //given
-        FilmOffer filmOfferToUpdate = new FilmOffer();
-        filmOfferToUpdate.setId(id);
-        filmOfferToUpdate.setDate(date);
-        filmOfferToUpdate.setTime(Time.valueOf("17:00:00"));
+        FilmOfferDto requestBodyFilmOfferDtoToUpdate = new FilmOfferDto();
+        requestBodyFilmOfferDtoToUpdate.setDate(date);
+        requestBodyFilmOfferDtoToUpdate.setTime(Time.valueOf("17:00:00"));
 
-        when(filmOfferService.updateFilmOffer(id, filmOfferToUpdate)).thenReturn(filmOfferToUpdate);
+        FilmDto filmDto = new FilmDto();
+        filmDto.setId(id);
+        requestBodyFilmOfferDtoToUpdate.setFilm(filmDto);
 
-        String requestBodyJson =
-                "{\n" +
-                "    \"id\": \"0\",\n" +
-                "    \"date\": \"2011-11-11\",\n" +
-                "    \"time\": \"11:00:00\",\n" +
-                "    \"price\": \"110\",\n" +
-                "    \"filmId\": \"1\",\n" +
-                "    \"hallId\": \"1\"\n" +
-                "}";
+        FilmOffer updatedFilmOffer = FilmOfferMapper.INSTANCE.mapFilmOffer(requestBodyFilmOfferDtoToUpdate);
+
+        when(filmOfferService.updateFilmOffer(id, updatedFilmOffer)).thenReturn(updatedFilmOffer);
+
         //when
-        mockMvc.perform(put("/offer/" + id).contentType(MediaType.APPLICATION_JSON).content(requestBodyJson))
+        mockMvc.perform(put("/offer/" + id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestBodyFilmOfferDtoToUpdate)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.localizedName").value(filmOfferToUpdate.getDate().toString()));
+                .andExpect(jsonPath("$.date").value(updatedFilmOffer.getDate().toString()));
 
         //then
-        verify(filmOfferService, times(1)).updateFilmOffer(id, filmOfferToUpdate);
+        verify(filmOfferService, times(1)).updateFilmOffer(id, updatedFilmOffer);
     }
 
     @Test

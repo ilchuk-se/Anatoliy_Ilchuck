@@ -1,7 +1,8 @@
 package com.epam.homework4.cinemawebapp.controller;
 
+import com.epam.homework4.cinemawebapp.dto.UserAuthDto;
 import com.epam.homework4.cinemawebapp.dto.UserDto;
-import com.epam.homework4.cinemawebapp.exception.UserControllerException;
+import com.epam.homework4.cinemawebapp.mapper.UserMapper;
 import com.epam.homework4.cinemawebapp.model.User;
 import com.epam.homework4.cinemawebapp.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -23,63 +24,45 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/user")
     public List<UserDto> getAllUser(){
-        return userService.listUsers();
+        return UserMapper.INSTANCE.mapUserDtos(userService.listUsers());
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/user/{id}")
-    public UserDto getUserById(@PathVariable String id) throws UserControllerException{
-        UserDto userDto = null;
-        try {
-            Long userId = Long.parseLong(id);
-            userDto = userService.getUserById(userId);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast user id to Long";
-            log.info(message);
-            throw new UserControllerException(message, ex.getCause());
-        }
-        return userDto;
+    public UserDto getUserById(@PathVariable Long id){
+        return UserMapper.INSTANCE.mapUserDto(userService.getUserById(id));
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/sign")
-    public UserDto getUserAuthorized(@RequestParam User user){
-        return userService.getUserAuthorized(user);
+    public UserDto getUserAuthorized(@RequestBody UserAuthDto userAuthDto){
+        return UserMapper.INSTANCE.mapUserDto(
+                userService.getUserAuthorized(
+                        userAuthDto.getLogin(),
+                        userAuthDto.getPassword()
+                )
+        );
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/user")
-    public UserDto createUser(@RequestBody User user){
-        return userService.createUser(user);
+    public UserDto createUser(@RequestBody @Valid UserDto userDto, @RequestParam String password){
+        User user = UserMapper.INSTANCE.mapUser(userDto);
+        user.setPassword(password);
+        return UserMapper.INSTANCE.mapUserDto(userService.createUser(user));
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/user/{id}")
-    public UserDto updateUser(@PathVariable String id, @RequestBody @Valid UserDto userDto) throws UserControllerException {
-        UserDto userDtoUpdated = null;
-        try {
-            Long userId = Long.parseLong(id);
-            userDtoUpdated = userService.updateUser(userId, userDto);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast user id to int";
-            log.info(message);
-            throw new UserControllerException(message, ex.getCause());
-        }
-        return userDtoUpdated;
+    public UserDto updateUser(@PathVariable Long id, @RequestBody UserDto userDto){
+        User userDataToUpdate = UserMapper.INSTANCE.mapUser(userDto);
+        return UserMapper.INSTANCE.mapUserDto(userService.updateUser(id, userDataToUpdate));
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/user/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) throws UserControllerException{
-        try {
-            Long userId = Long.parseLong(id);
-            userService.deleteUser(userId);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast user id to int";
-            log.info(message);
-            throw new UserControllerException(message, ex.getCause());
-        }
-
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id){
+        userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
 }

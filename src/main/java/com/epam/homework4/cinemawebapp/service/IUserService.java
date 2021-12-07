@@ -1,20 +1,19 @@
 package com.epam.homework4.cinemawebapp.service;
 
-import com.epam.homework4.cinemawebapp.dto.UserDto;
 import com.epam.homework4.cinemawebapp.model.User;
 
 import java.util.List;
 
 public interface IUserService {
-    UserDto getUserById(Long id);
+    User getUserById(Long id);
 
-    UserDto getUserAuthorized(User user);
+    User getUserAuthorized(String login, String password);
 
-    List<UserDto> listUsers();
+    List<User> listUsers();
 
-    UserDto createUser(User user);
+    User createUser(User user);
 
-    UserDto updateUser(Long id, UserDto userDto);
+    User updateUser(Long id, User user);
 
     void deleteUser(Long id);
 }

@@ -1,6 +1,7 @@
 package com.epam.homework4.cinemawebapp.controller;
 
-import com.epam.homework4.cinemawebapp.exception.TicketControllerException;
+import com.epam.homework4.cinemawebapp.dto.TicketDto;
+import com.epam.homework4.cinemawebapp.mapper.TicketMapper;
 import com.epam.homework4.cinemawebapp.model.Ticket;
 import com.epam.homework4.cinemawebapp.service.ITicketService;
 import lombok.RequiredArgsConstructor;
@@ -21,57 +22,41 @@ public class TicketController{
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/ticket")
-    public List<Ticket> getAllTickets() {
-        return  ticketService.listTickets();
+    public List<TicketDto> getAllTickets() {
+        return TicketMapper.INSTANCE.mapTicketDtos(
+                ticketService.listTickets()
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/ticket/{id}")
-    public Ticket getTicketById(@PathVariable String id) throws TicketControllerException {
-        Ticket Ticket = null;
-        try {
-            Long TicketId = Long.parseLong(id);
-            Ticket = ticketService.getTicketById(TicketId);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast Ticket id to int";
-            log.info(message);
-            throw new TicketControllerException(message, ex.getCause());
-        }
-        return Ticket;
+    public TicketDto getTicketById(@PathVariable Long id) {
+        return TicketMapper.INSTANCE.mapTicketDto(
+                ticketService.getTicketById(id)
+        );
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/ticket")
-    public Ticket createTicket(@RequestBody @Valid Ticket Ticket){
-        return  ticketService.createTicket(Ticket);
+    public TicketDto createTicket(@RequestBody @Valid TicketDto ticketDto){
+        Ticket ticket = TicketMapper.INSTANCE.mapTicket(ticketDto);
+        return  TicketMapper.INSTANCE.mapTicketDto(
+                ticketService.createTicket(ticket)
+        );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/ticket/{id}")
-    public Ticket updateTicket(@PathVariable String id, @RequestBody @Valid Ticket Ticket) throws TicketControllerException {
-        Ticket TicketUpdated = null;
-        try {
-            Long TicketId = Long.parseLong(id);
-            TicketUpdated = ticketService.updateTicket(TicketId, Ticket);
-        }catch (NumberFormatException ex){
-            String message = "Can not cast Ticket id to int";
-            log.info(message);
-            throw new TicketControllerException(message, ex.getCause());
-        }
-        return TicketUpdated;
+    public TicketDto updateTicket(@PathVariable Long id, @RequestBody @Valid TicketDto ticketDto)  {
+        Ticket ticketDataToUpdate = TicketMapper.INSTANCE.mapTicket(ticketDto);
+        return TicketMapper.INSTANCE.mapTicketDto(
+                ticketService.updateTicket(id, ticketDataToUpdate)
+        );
     }
 
     @DeleteMapping(value = "/ticket/{id}")
-    public ResponseEntity<Void> deleteTicket(@PathVariable String id) throws TicketControllerException {
-        try {
-            Long TicketId = Long.parseLong(id);
-            ticketService.deleteTicket(TicketId);
-        } catch (NumberFormatException ex) {
-            String message = "Can not cast Ticket id to int";
-            log.info(message);
-            throw new TicketControllerException(message, ex.getCause());
-        }
-
+    public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
+        ticketService.deleteTicket(id);
         return ResponseEntity.noContent().build();
     }
 }
