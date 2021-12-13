@@ -28,7 +28,7 @@ public class Ticket {
     @Min(0)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name= "offer_id")
-    private FilmOffer offer;
+    private Offer offer;
 
     @NotNull
     @Min(0)

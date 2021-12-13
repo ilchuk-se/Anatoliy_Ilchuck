@@ -3,7 +3,7 @@ package com.epam.homework4.cinemawebapp.controller;
 import com.epam.homework4.cinemawebapp.dto.FilmDto;
 import com.epam.homework4.cinemawebapp.mapper.FilmMapper;
 import com.epam.homework4.cinemawebapp.model.Film;
-import com.epam.homework4.cinemawebapp.service.IFilmService;
+import com.epam.homework4.cinemawebapp.service.FilmService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class FilmControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private IFilmService FilmService;
+    private FilmService filmService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -47,7 +47,7 @@ class FilmControllerTest {
         film.setLocalizedName(name);
         film.setId(id);
 
-        when(FilmService.getFilmById(id)).thenReturn(film);
+        when(filmService.getById(id)).thenReturn(film);
 
         //when
         mockMvc.perform(get("/film/" + id))
@@ -57,7 +57,7 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.localizedName").value(film.getLocalizedName()));
 
         //then
-        verify(FilmService, times(1)).getFilmById(id);
+        verify(filmService, times(1)).getById(id);
     }
 
     @Test
@@ -66,7 +66,7 @@ class FilmControllerTest {
         Film film = new Film();
         film.setLocalizedName(name);
 
-        when(FilmService.listFilms()).thenReturn(Collections.singletonList(film));
+        when(filmService.getAll()).thenReturn(Collections.singletonList(film));
 
         //when
         mockMvc.perform(get("/film"))
@@ -76,7 +76,7 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$[0].localizedName").value(film.getLocalizedName()));
 
         //then
-        verify(FilmService, times(1)).listFilms();
+        verify(filmService, times(1)).getAll();
     }
 
     @Test
@@ -92,7 +92,7 @@ class FilmControllerTest {
 
         Film createdFilm = FilmMapper.INSTANCE.mapFilm(requestBodyFilmToCreateDto);
 
-        when(FilmService.createFilm(createdFilm)).thenReturn(createdFilm);
+        when(filmService.create(createdFilm)).thenReturn(createdFilm);
 
         //when
         mockMvc
@@ -105,7 +105,7 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.localizedName").value(createdFilm.getLocalizedName()));
 
         //then
-        verify(FilmService, times(1)).createFilm(createdFilm);
+        verify(filmService, times(1)).create(createdFilm);
     }
 
     @Test
@@ -121,7 +121,7 @@ class FilmControllerTest {
 
         Film updatedFilm = FilmMapper.INSTANCE.mapFilm(requestBodyFilmDtoToUpdate);
 
-        when(FilmService.updateFilm(id, updatedFilm)).thenReturn(updatedFilm);
+        when(filmService.update(id, updatedFilm)).thenReturn(updatedFilm);
 
         //when
         mockMvc.perform(put("/film/" + id)
@@ -132,19 +132,19 @@ class FilmControllerTest {
                 .andExpect(jsonPath("$.localizedName").value(updatedFilm.getLocalizedName()));
 
         //then
-        verify(FilmService, times(1)).updateFilm(id, updatedFilm);
+        verify(filmService, times(1)).update(id, updatedFilm);
     }
 
     @Test
     void deleteFilmTest() throws Exception{
         //given
-        doNothing().when(FilmService).deleteFilm(id);
+        doNothing().when(filmService).delete(id);
 
         //when
         mockMvc.perform(delete("/film/" + id))
                 .andExpect(status().isNoContent());
 
         //then
-        verify(FilmService, times(1)).deleteFilm(id);
+        verify(filmService, times(1)).delete(id);
     }
 }

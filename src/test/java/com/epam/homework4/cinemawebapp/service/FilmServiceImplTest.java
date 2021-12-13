@@ -1,7 +1,7 @@
 package com.epam.homework4.cinemawebapp.service;
 
 import com.epam.homework4.cinemawebapp.model.Film;
-import com.epam.homework4.cinemawebapp.repository.IFilmRepository;
+import com.epam.homework4.cinemawebapp.repository.FilmRepository;
 import com.epam.homework4.cinemawebapp.service.impl.FilmServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,12 +20,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class FilmServiceImplTest {
+class FilmServiceImplTest {
     @InjectMocks
     private FilmServiceImpl filmService;
 
     @Mock
-    private IFilmRepository filmRepository;
+    private FilmRepository filmRepository;
 
     private final Long id = Long.parseLong("1");
     private final String name = "someFilm";
@@ -41,7 +41,7 @@ public class FilmServiceImplTest {
         when(filmRepository.findById(id)).thenReturn(expectedFilmOptional);
 
         //when
-        Film actualFilm = filmService.getFilmById(id);
+        Film actualFilm = filmService.getById(id);
 
         //then
         assertEquals(actualFilm, expectedFilm);
@@ -65,7 +65,7 @@ public class FilmServiceImplTest {
         when(filmRepository.findAll()).thenReturn(expectedFilmIterable);
 
         //when
-        List<Film> actualFilms = filmService.listFilms();
+        List<Film> actualFilms = filmService.getAll();
 
         //then
         assertEquals(actualFilms, expectedFilms);
@@ -82,7 +82,7 @@ public class FilmServiceImplTest {
         when(filmRepository.save(FilmToCreate)).thenReturn(FilmToCreate);
 
         //when
-        Film createdFilm = filmService.createFilm(FilmToCreate);
+        Film createdFilm = filmService.create(FilmToCreate);
 
         //then
         verify(filmRepository, times(1)).save(FilmToCreate);
@@ -108,7 +108,7 @@ public class FilmServiceImplTest {
         when(filmRepository.save(updatedFilm)).thenReturn(updatedFilm);
 
         //when
-        Film createdFilm = filmService.updateFilm(id, dataToUpdate);
+        Film createdFilm = filmService.update(id, dataToUpdate);
 
         //then
         verify(filmRepository, times(1)).save(updatedFilm);
@@ -121,7 +121,7 @@ public class FilmServiceImplTest {
         Film dataToUpdate = new Film();
 
         //then
-        assertThrows(NoSuchElementException.class, () -> filmService.updateFilm(id, dataToUpdate));
+        assertThrows(NoSuchElementException.class, () -> filmService.update(id, dataToUpdate));
     }
 
     @Test
@@ -130,7 +130,7 @@ public class FilmServiceImplTest {
         doNothing().when(filmRepository).deleteById(id);
 
         //when
-        filmService.deleteFilm(id);
+        filmService.delete(id);
 
         //then
         verify(filmRepository, times(1)).deleteById(id);
@@ -141,6 +141,6 @@ public class FilmServiceImplTest {
         doThrow(RuntimeException.class).when(filmRepository).deleteById(any());
 
         assertThrows(RuntimeException.class,
-                () -> filmService.deleteFilm(id));
+                () -> filmService.delete(id));
     }
 }

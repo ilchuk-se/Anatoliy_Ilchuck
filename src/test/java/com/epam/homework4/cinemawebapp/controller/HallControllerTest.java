@@ -1,9 +1,9 @@
 package com.epam.homework4.cinemawebapp.controller;
 
-import com.epam.homework4.cinemawebapp.dto.CinemaHallDto;
-import com.epam.homework4.cinemawebapp.mapper.CinemaHallMapper;
-import com.epam.homework4.cinemawebapp.model.CinemaHall;
-import com.epam.homework4.cinemawebapp.service.IHallService;
+import com.epam.homework4.cinemawebapp.dto.HallDto;
+import com.epam.homework4.cinemawebapp.mapper.HallMapper;
+import com.epam.homework4.cinemawebapp.model.Hall;
+import com.epam.homework4.cinemawebapp.service.HallService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class HallControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private IHallService hallService;
+    private HallService hallService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -43,11 +43,11 @@ class HallControllerTest {
     @Test
     void getHallByIdTest() throws Exception{
         //given
-        CinemaHall hall = new CinemaHall();
+        Hall hall = new Hall();
         hall.setName(name);
         hall.setId(id);
 
-        when(hallService.getHallById(id)).thenReturn(hall);
+        when(hallService.getById(id)).thenReturn(hall);
 
         //when
         mockMvc.perform(get("/hall/" + id))
@@ -57,16 +57,16 @@ class HallControllerTest {
                 .andExpect(jsonPath("$.name").value(hall.getName()));
 
         //then
-        verify(hallService, times(1)).getHallById(id);
+        verify(hallService, times(1)).getById(id);
     }
 
     @Test
     void getAllHallsTest() throws Exception{
         //given
-        CinemaHall hall = new CinemaHall();
+        Hall hall = new Hall();
         hall.setName(name);
 
-        when(hallService.listHalls()).thenReturn(Collections.singletonList(hall));
+        when(hallService.getAll()).thenReturn(Collections.singletonList(hall));
 
         //when
         mockMvc.perform(get("/hall"))
@@ -76,20 +76,20 @@ class HallControllerTest {
                 .andExpect(jsonPath("$[0].name").value(hall.getName()));
 
         //then
-        verify(hallService, times(1)).listHalls();
+        verify(hallService, times(1)).getAll();
     }
 
     @Test
     void createHallTest() throws Exception{
         //given
-        CinemaHallDto requestBodyHallDtoToCreate = new CinemaHallDto();
+        HallDto requestBodyHallDtoToCreate = new HallDto();
         requestBodyHallDtoToCreate.setName(name);
         requestBodyHallDtoToCreate.setSize(size);
         requestBodyHallDtoToCreate.setSchemeImageDir(schemeImageDir);
 
-        CinemaHall createdHall = CinemaHallMapper.INSTANCE.mapCinemaHall(requestBodyHallDtoToCreate);
+        Hall createdHall = HallMapper.INSTANCE.mapHall(requestBodyHallDtoToCreate);
 
-        when(hallService.createHall(createdHall)).thenReturn(createdHall);
+        when(hallService.create(createdHall)).thenReturn(createdHall);
 
         //when
         mockMvc.perform(post("/hall")
@@ -101,20 +101,20 @@ class HallControllerTest {
                 .andExpect(jsonPath("$.name").value(createdHall.getName()));
 
         //then
-        verify(hallService, times(1)).createHall(createdHall);
+        verify(hallService, times(1)).create(createdHall);
     }
 
     @Test
     void updateHallTest() throws Exception{
         //given
-        CinemaHallDto requestBodyHallDtoToUpdate = new CinemaHallDto();
+        HallDto requestBodyHallDtoToUpdate = new HallDto();
         requestBodyHallDtoToUpdate.setSize(45);
         requestBodyHallDtoToUpdate.setName("SomeHall2");
         requestBodyHallDtoToUpdate.setSchemeImageDir("folder/scheme/image.img");
 
-        CinemaHall updatedHall = CinemaHallMapper.INSTANCE.mapCinemaHall(requestBodyHallDtoToUpdate);
+        Hall updatedHall = HallMapper.INSTANCE.mapHall(requestBodyHallDtoToUpdate);
 
-        when(hallService.updateHall(id, updatedHall)).thenReturn(updatedHall);
+        when(hallService.update(id, updatedHall)).thenReturn(updatedHall);
 
         //when
         mockMvc.perform(put("/hall/" + id)
@@ -125,19 +125,19 @@ class HallControllerTest {
                 .andExpect(jsonPath("$.name").value(updatedHall.getName()));
 
         //then
-        verify(hallService, times(1)).updateHall(id, updatedHall);
+        verify(hallService, times(1)).update(id, updatedHall);
     }
 
     @Test
     void deleteHallTest() throws Exception{
         //given
-        doNothing().when(hallService).deleteHall(id);
+        doNothing().when(hallService).delete(id);
 
         //when
         mockMvc.perform(delete("/hall/" + id))
                 .andExpect(status().isNoContent());
 
         //then
-        verify(hallService, times(1)).deleteHall(id);
+        verify(hallService, times(1)).delete(id);
     }
 }

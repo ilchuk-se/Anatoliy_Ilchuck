@@ -1,7 +1,7 @@
 package com.epam.homework4.cinemawebapp.service;
 
 import com.epam.homework4.cinemawebapp.model.Ticket;
-import com.epam.homework4.cinemawebapp.repository.ITicketRepository;
+import com.epam.homework4.cinemawebapp.repository.TicketRepository;
 import com.epam.homework4.cinemawebapp.service.impl.TicketServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,12 +23,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class TicketServiceImplTest {
+class TicketServiceImplTest {
     @InjectMocks
     private TicketServiceImpl ticketService;
 
     @Mock
-    private ITicketRepository ticketRepository;
+    private TicketRepository ticketRepository;
 
     private final Long id = Long.parseLong("1");
     private final int place = 1;
@@ -44,7 +44,7 @@ public class TicketServiceImplTest {
         when(ticketRepository.findById(id)).thenReturn(expectedTicketOptional);
 
         //when
-        Ticket actualTicket = ticketService.getTicketById(id);
+        Ticket actualTicket = ticketService.getById(id);
 
         //then
         assertEquals(actualTicket, expectedTicket);
@@ -68,7 +68,7 @@ public class TicketServiceImplTest {
         when(ticketRepository.findAll()).thenReturn(expectedTicketIterable);
 
         //when
-        List<Ticket> actualTickets = ticketService.listTickets();
+        List<Ticket> actualTickets = ticketService.getAll();
 
         //then
         assertEquals(actualTickets, expectedTickets);
@@ -85,7 +85,7 @@ public class TicketServiceImplTest {
         when(ticketRepository.save(TicketToCreate)).thenReturn(TicketToCreate);
 
         //when
-        Ticket createdTicket = ticketService.createTicket(TicketToCreate);
+        Ticket createdTicket = ticketService.create(TicketToCreate);
 
         //then
         verify(ticketRepository, times(1)).save(TicketToCreate);
@@ -111,7 +111,7 @@ public class TicketServiceImplTest {
         when(ticketRepository.save(updatedTicket)).thenReturn(updatedTicket);
 
         //when
-        Ticket createdTicket = ticketService.updateTicket(id, dataToUpdate);
+        Ticket createdTicket = ticketService.update(id, dataToUpdate);
 
         //then
         verify(ticketRepository, times(1)).save(updatedTicket);
@@ -124,7 +124,7 @@ public class TicketServiceImplTest {
         Ticket dataToUpdate = new Ticket();
 
         //then
-        assertThrows(NoSuchElementException.class, () -> ticketService.updateTicket(id, dataToUpdate));
+        assertThrows(NoSuchElementException.class, () -> ticketService.update(id, dataToUpdate));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class TicketServiceImplTest {
         doNothing().when(ticketRepository).deleteById(id);
 
         //when
-        ticketService.deleteTicket(id);
+        ticketService.delete(id);
 
         //then
         verify(ticketRepository, times(1)).deleteById(id);
@@ -144,6 +144,6 @@ public class TicketServiceImplTest {
         doThrow(RuntimeException.class).when(ticketRepository).deleteById(any());
 
         assertThrows(RuntimeException.class,
-                () -> ticketService.deleteTicket(id));
+                () -> ticketService.delete(id));
     }
 }

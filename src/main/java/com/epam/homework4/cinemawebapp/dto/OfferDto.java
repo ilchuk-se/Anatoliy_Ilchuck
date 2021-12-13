@@ -12,7 +12,7 @@ import java.sql.Time;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FilmOfferDto {
+public class OfferDto {
     private Long id;
 
     @NotNull

@@ -4,7 +4,7 @@ import com.epam.homework4.cinemawebapp.dto.UserAuthDto;
 import com.epam.homework4.cinemawebapp.dto.UserDto;
 import com.epam.homework4.cinemawebapp.mapper.UserMapper;
 import com.epam.homework4.cinemawebapp.model.User;
-import com.epam.homework4.cinemawebapp.service.IUserService;
+import com.epam.homework4.cinemawebapp.service.UserService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class UserControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private IUserService userService;
+    private UserService userService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -46,7 +46,7 @@ class UserControllerTest {
         User userInDb = new User();
         userInDb.setId(id);
 
-        when(userService.getUserById(id)).thenReturn(userInDb);
+        when(userService.getById(id)).thenReturn(userInDb);
 
         //when
         mockMvc.perform(get("/user/" + id))
@@ -56,7 +56,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.id").value(userInDb.getId().toString()));
 
         //then
-        verify(userService, times(1)).getUserById(id);
+        verify(userService, times(1)).getById(id);
     }
 
     @Test
@@ -70,7 +70,7 @@ class UserControllerTest {
         userInDb.setPassword(password);
         userInDb.setLogin(login);
 
-        when(userService.getUserAuthorized(login, password)).thenReturn(userInDb);
+        when(userService.getAuthorized(login, password)).thenReturn(userInDb);
 
         //when
         mockMvc.perform(get("/sign").contentType(MediaType.APPLICATION_JSON)
@@ -87,7 +87,7 @@ class UserControllerTest {
         User userInDb = new User();
         userInDb.setId(id);
 
-        when(userService.listUsers()).thenReturn(Collections.singletonList(userInDb));
+        when(userService.getAll()).thenReturn(Collections.singletonList(userInDb));
 
         //when
         mockMvc.perform(get("/user"))
@@ -97,7 +97,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$[0].id").value(userInDb.getId().toString()));
 
         //then
-        verify(userService, times(1)).listUsers();
+        verify(userService, times(1)).getAll();
     }
 
     @Test
@@ -113,7 +113,7 @@ class UserControllerTest {
 
         UserDto requestBodyUserDto = UserMapper.INSTANCE.mapUserDto(userToCreate);
 
-        when(userService.createUser(userToCreate)).thenReturn(userToCreate);
+        when(userService.create(userToCreate)).thenReturn(userToCreate);
 
         //when
         mockMvc.perform(post("/user?password=" + password).contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +124,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value(userToCreate.getName()));
 
         //then
-        verify(userService, times(1)).createUser(userToCreate);
+        verify(userService, times(1)).create(userToCreate);
     }
 
     @Test
@@ -136,7 +136,7 @@ class UserControllerTest {
 
         UserDto requestBodyUserDto = UserMapper.INSTANCE.mapUserDto(userToUpdate);
 
-        when(userService.updateUser(id, userToUpdate)).thenReturn(userToUpdate);
+        when(userService.update(id, userToUpdate)).thenReturn(userToUpdate);
 
         //when
         mockMvc.perform(put("/user/" + id).contentType(MediaType.APPLICATION_JSON)
@@ -146,19 +146,19 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value(requestBodyUserDto.getName()));
 
         //then
-        verify(userService, times(1)).updateUser(id, userToUpdate);
+        verify(userService, times(1)).update(id, userToUpdate);
     }
 
     @Test
     void deleteUserTest() throws Exception{
         //given
-        doNothing().when(userService).deleteUser(id);
+        doNothing().when(userService).delete(id);
 
         //when
         mockMvc.perform(delete("/user/" + id))
                 .andExpect(status().isNoContent());
 
         //then
-        verify(userService, times(1)).deleteUser(id);
+        verify(userService, times(1)).delete(id);
     }
 }

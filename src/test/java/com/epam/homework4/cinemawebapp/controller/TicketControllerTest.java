@@ -1,11 +1,11 @@
 package com.epam.homework4.cinemawebapp.controller;
 
-import com.epam.homework4.cinemawebapp.dto.FilmOfferDto;
+import com.epam.homework4.cinemawebapp.dto.OfferDto;
 import com.epam.homework4.cinemawebapp.dto.TicketDto;
 import com.epam.homework4.cinemawebapp.dto.UserDto;
 import com.epam.homework4.cinemawebapp.mapper.TicketMapper;
 import com.epam.homework4.cinemawebapp.model.Ticket;
-import com.epam.homework4.cinemawebapp.service.ITicketService;
+import com.epam.homework4.cinemawebapp.service.TicketService;
 import com.epam.homework4.cinemawebapp.test.config.TestWebConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@ class TicketControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ITicketService ticketService;
+    private TicketService ticketService;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -46,7 +46,7 @@ class TicketControllerTest {
         Ticket ticket = new Ticket();
         ticket.setId(id);
 
-        when(ticketService.getTicketById(id)).thenReturn(ticket);
+        when(ticketService.getById(id)).thenReturn(ticket);
 
         //when
         mockMvc.perform(get("/ticket/" + id))
@@ -56,7 +56,7 @@ class TicketControllerTest {
                 .andExpect(jsonPath("$.id").value(ticket.getId().toString()));
 
         //then
-        verify(ticketService, times(1)).getTicketById(id);
+        verify(ticketService, times(1)).getById(id);
     }
 
     @Test
@@ -65,7 +65,7 @@ class TicketControllerTest {
         Ticket ticket = new Ticket();
         ticket.setId(id);
 
-        when(ticketService.listTickets()).thenReturn(Collections.singletonList(ticket));
+        when(ticketService.getAll()).thenReturn(Collections.singletonList(ticket));
 
         //when
         mockMvc.perform(get("/ticket"))
@@ -75,7 +75,7 @@ class TicketControllerTest {
                 .andExpect(jsonPath("$[0].id").value(ticket.getId()));
 
         //then
-        verify(ticketService, times(1)).listTickets();
+        verify(ticketService, times(1)).getAll();
     }
 
     @Test
@@ -83,14 +83,14 @@ class TicketControllerTest {
         //given
         TicketDto requestBodyTicketDtoToCreate = new TicketDto();
         requestBodyTicketDtoToCreate.setPlace(10);
-        requestBodyTicketDtoToCreate.setOffer(new FilmOfferDto());
+        requestBodyTicketDtoToCreate.setOffer(new OfferDto());
         requestBodyTicketDtoToCreate.setUser(new UserDto());
         requestBodyTicketDtoToCreate.setPlace(10);
         requestBodyTicketDtoToCreate.setPrice(BigDecimal.ZERO);
 
         Ticket createdTicket = TicketMapper.INSTANCE.mapTicket(requestBodyTicketDtoToCreate);
 
-        when(ticketService.createTicket(createdTicket)).thenReturn(createdTicket);
+        when(ticketService.create(createdTicket)).thenReturn(createdTicket);
 
         //when
         mockMvc.perform(post("/ticket")
@@ -102,7 +102,7 @@ class TicketControllerTest {
                 .andExpect(jsonPath("$.place").value(createdTicket.getPlace()));
 
         //then
-        verify(ticketService, times(1)).createTicket(createdTicket);
+        verify(ticketService, times(1)).create(createdTicket);
     }
 
     @Test
@@ -110,14 +110,14 @@ class TicketControllerTest {
         //given
         TicketDto requestBodyTicketDtoToCreate = new TicketDto();
         requestBodyTicketDtoToCreate.setPlace(10);
-        requestBodyTicketDtoToCreate.setOffer(new FilmOfferDto());
+        requestBodyTicketDtoToCreate.setOffer(new OfferDto());
         requestBodyTicketDtoToCreate.setUser(new UserDto());
         requestBodyTicketDtoToCreate.setPlace(10);
         requestBodyTicketDtoToCreate.setPrice(BigDecimal.ZERO);
 
         Ticket updatedTicket = TicketMapper.INSTANCE.mapTicket(requestBodyTicketDtoToCreate);
 
-        when(ticketService.updateTicket(id, updatedTicket)).thenReturn(updatedTicket);
+        when(ticketService.update(id, updatedTicket)).thenReturn(updatedTicket);
 
         //when
         mockMvc.perform(put("/ticket/" + id)
@@ -128,19 +128,19 @@ class TicketControllerTest {
                 .andExpect(jsonPath("$.place").value(updatedTicket.getPlace()));
 
         //then
-        verify(ticketService, times(1)).updateTicket(id, updatedTicket);
+        verify(ticketService, times(1)).update(id, updatedTicket);
     }
 
     @Test
     void deleteTicketTest() throws Exception{
         //given
-        doNothing().when(ticketService).deleteTicket(id);
+        doNothing().when(ticketService).delete(id);
 
         //when
         mockMvc.perform(delete("/ticket/" + id))
                 .andExpect(status().isNoContent());
 
         //then
-        verify(ticketService, times(1)).deleteTicket(id);
+        verify(ticketService, times(1)).delete(id);
     }
 }

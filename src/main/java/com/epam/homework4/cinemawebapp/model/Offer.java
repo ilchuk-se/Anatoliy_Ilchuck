@@ -12,7 +12,7 @@ import java.sql.Time;
 @Data
 @NoArgsConstructor
 @Entity
-public class FilmOffer {
+public class Offer {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

@@ -1,9 +1,10 @@
 package com.epam.homework4.cinemawebapp.service.impl;
 
 import com.epam.homework4.cinemawebapp.businesslogic.OptionalChecker;
+import com.epam.homework4.cinemawebapp.businesslogic.OptionalCheckerImpl;
 import com.epam.homework4.cinemawebapp.model.User;
-import com.epam.homework4.cinemawebapp.repository.IUserRepository;
-import com.epam.homework4.cinemawebapp.service.IUserService;
+import com.epam.homework4.cinemawebapp.repository.UserRepository;
+import com.epam.homework4.cinemawebapp.service.UserService;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +16,13 @@ import java.util.NoSuchElementException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements IUserService {
+public class UserServiceImpl implements UserService {
 
-    private final IUserRepository userRepository;
-    private final OptionalChecker<User> userOptionalChecker = new OptionalChecker<>();
+    private final UserRepository userRepository;
+    private final OptionalChecker<User> userOptionalChecker = new OptionalCheckerImpl();
 
     @Override
-    public User getUserById(Long id) throws NoSuchElementException{
+    public User getById(Long id) throws NoSuchElementException{
         return userOptionalChecker.getValueIfPresent(
                 userRepository.findById(id),
                 "User with id: " + id + " was not found."
@@ -29,22 +30,22 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User getUserAuthorized(String login, String password) {
+    public User getAuthorized(String login, String password) {
         return userRepository.findByLoginAndPassword(login, password);
     }
 
     @Override
-    public List<User> listUsers() {
+    public List<User> getAll() {
         return Lists.newArrayList(userRepository.findAll());
     }
 
     @Override
-    public User createUser(User user) {
+    public User create(User user) {
         return userRepository.save(user);
     }
 
     @Override
-    public User updateUser(Long id, User user) {
+    public User update(Long id, User user) {
         User userToUpdate = userOptionalChecker.getValueIfPresent(
                 userRepository.findById(id),
                 "User with id: " + id + " not found and can not be updated."
@@ -55,7 +56,7 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void delete(Long id) {
         userRepository.deleteById(id);
     }
 }

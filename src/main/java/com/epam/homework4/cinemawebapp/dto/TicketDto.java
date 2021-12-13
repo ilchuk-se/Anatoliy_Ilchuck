@@ -21,7 +21,7 @@ public class TicketDto {
     private UserDto user;
 
     @NotNull
-    private FilmOfferDto offer;
+    private OfferDto offer;
 
     @NotNull
     @Min(0)

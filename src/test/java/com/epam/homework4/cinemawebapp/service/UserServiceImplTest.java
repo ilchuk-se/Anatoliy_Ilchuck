@@ -3,7 +3,7 @@ package com.epam.homework4.cinemawebapp.service;
 import com.epam.homework4.cinemawebapp.dto.UserDto;
 import com.epam.homework4.cinemawebapp.mapper.UserMapper;
 import com.epam.homework4.cinemawebapp.model.User;
-import com.epam.homework4.cinemawebapp.repository.IUserRepository;
+import com.epam.homework4.cinemawebapp.repository.UserRepository;
 import com.epam.homework4.cinemawebapp.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +27,7 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
 
     @Mock
-    private IUserRepository userRepository;
+    private UserRepository userRepository;
 
     private final Long id = Long.parseLong("1");
     private final String login = "login";
@@ -42,7 +42,7 @@ class UserServiceImplTest {
 
         when(userRepository.findById(id)).thenReturn(expectedUserOptional);
         //when
-        User actualUser = userService.getUserById(id);
+        User actualUser = userService.getById(id);
 
         //then
         assertEquals(expectedUser, actualUser);
@@ -59,7 +59,7 @@ class UserServiceImplTest {
         when(userRepository.findByLoginAndPassword(login, password)).thenReturn(userToAuth);
 
         //when
-        User actualUser = userService.getUserAuthorized(login, password);
+        User actualUser = userService.getAuthorized(login, password);
 
         //then
         assertEquals(actualUser, userToAuth);
@@ -80,7 +80,7 @@ class UserServiceImplTest {
         when(userRepository.findAll()).thenReturn(expectedUserIterable);
 
         //when
-        List<User> actualUsers = userService.listUsers();
+        List<User> actualUsers = userService.getAll();
 
         //then
         assertEquals(actualUsers, expectedUsers);
@@ -97,7 +97,7 @@ class UserServiceImplTest {
         when(userRepository.save(userToCreate)).thenReturn(userToCreate);
 
         //when
-        User createdUser = userService.createUser(userToCreate);
+        User createdUser = userService.create(userToCreate);
 
         //then
         assertEquals(createdUser, userToCreate);
@@ -120,7 +120,7 @@ class UserServiceImplTest {
         when(userRepository.save(userDataToUpdate)).thenReturn(userDataToUpdate);
 
         //when
-        User updatedUser = userService.updateUser(id, userDataToUpdate);
+        User updatedUser = userService.update(id, userDataToUpdate);
 
         //then
         verify(userRepository, times(1)).findById(id);
@@ -135,7 +135,7 @@ class UserServiceImplTest {
         User userDataToUpdate = new User();
 
         //then
-        assertThrows(NoSuchElementException.class, () -> userService.updateUser(id, userDataToUpdate));
+        assertThrows(NoSuchElementException.class, () -> userService.update(id, userDataToUpdate));
         verify(userRepository, times(1)).findById(id);
     }
 
@@ -145,7 +145,7 @@ class UserServiceImplTest {
         doNothing().when(userRepository).deleteById(id);
 
         //when
-        userService.deleteUser(id);
+        userService.delete(id);
 
         //then
         verify(userRepository, times(1)).deleteById(id);
@@ -156,6 +156,6 @@ class UserServiceImplTest {
         doThrow(RuntimeException.class).when(userRepository).deleteById(any());
 
         assertThrows(RuntimeException.class,
-                () -> userService.deleteUser(id));
+                () -> userService.delete(id));
     }
 }

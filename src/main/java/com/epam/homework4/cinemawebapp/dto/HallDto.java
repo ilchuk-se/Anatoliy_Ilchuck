@@ -1,23 +1,16 @@
-package com.epam.homework4.cinemawebapp.model;
+package com.epam.homework4.cinemawebapp.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
-@Entity
-public class CinemaHall {
+public class HallDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @NotNull
