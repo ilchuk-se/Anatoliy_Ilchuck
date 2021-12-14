@@ -11,22 +11,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.OptionalInt;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FilmServiceImpl implements FilmService {
+public final class FilmServiceImpl implements FilmService {
 
     private final FilmRepository filmRepository;
     private final OptionalChecker<Film> filmOptionalChecker = new OptionalCheckerImpl();
 
     @Override
-    public Film getById(Long id) {
-        log.info("getFilm by id {}", id);
-
+    public Film getById(final Long id) {
         return filmOptionalChecker.getValueIfPresent(
                 filmRepository.findById(id),
                 "Film with id: " + id + " was not found."
@@ -35,33 +30,28 @@ public class FilmServiceImpl implements FilmService {
 
     @Override
     public List<Film> getAll() {
-        log.info("get all films");
-
         return Lists.newArrayList(filmRepository.findAll());
     }
 
     @Override
-    public Film create(Film film) {
-        log.info("createFilm with name {}", film.getOriginalName());
+    public Film create(final Film film) {
         return filmRepository.save(film);
     }
 
-    @Override
-    public Film update(Long id, Film film) {
-        log.info("updateFilm with name {}", film.getOriginalName());
+    private Film editFilm(final Film source, final Film target){
+        source.setId(target.getId());
+        return source;
+    }
 
-        Film filmToUpdate = filmOptionalChecker.getValueIfPresent(
-                filmRepository.findById(id),
-                "Film with id: " + id + " not found and can not be updated."
+    @Override
+    public Film update(final Long id,final Film film) {
+        return filmRepository.save(
+                editFilm(film, getById(id))
         );
-        film.setId(filmToUpdate.getId());
-
-        return filmRepository.save(film);
     }
 
     @Override
-    public void delete(Long id) {
-        log.info("deleteFilm with id {}", id);
+    public void delete(final Long id) {
         filmRepository.deleteById(id);
     }
 }

@@ -5,13 +5,11 @@ import com.epam.homework4.cinemawebapp.model.Ticket;
 import java.util.List;
 
 public interface TicketService {
-    Ticket getById(Long id);
+    Ticket getById(final Long id);
 
     List<Ticket> getAll();
 
-    Ticket create(Ticket ticket);
+    Ticket create(final Ticket ticket);
 
-    Ticket update(Long id, Ticket ticket);
-
-    void delete(Long id);
+    void delete(final Long id);
 }

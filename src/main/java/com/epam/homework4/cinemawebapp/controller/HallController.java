@@ -2,7 +2,6 @@ package com.epam.homework4.cinemawebapp.controller;
 
 import com.epam.homework4.cinemawebapp.dto.HallDto;
 import com.epam.homework4.cinemawebapp.mapper.HallMapper;
-import com.epam.homework4.cinemawebapp.model.Hall;
 import com.epam.homework4.cinemawebapp.service.HallService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class HallController {
+public final class HallController {
 
     private final HallService hallService;
 
@@ -30,7 +29,7 @@ public class HallController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/hall/{id}")
-    public HallDto getById(@PathVariable Long id) {
+    public HallDto getById(@PathVariable final Long id) {
         return HallMapper.INSTANCE.mapHallDto(
                 hallService.getById(id)
         );
@@ -38,24 +37,22 @@ public class HallController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/hall")
-    public HallDto create(@RequestBody @Valid HallDto hallDto){
-        Hall hallToCreate = HallMapper.INSTANCE.mapHall(hallDto);
+    public HallDto create(@RequestBody @Valid final HallDto hallDto){
         return HallMapper.INSTANCE.mapHallDto(
-                hallService.create(hallToCreate)
+                hallService.create(HallMapper.INSTANCE.mapHall(hallDto))
         );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/hall/{id}")
-    public HallDto update(@PathVariable Long id, @RequestBody @Valid HallDto hallDto) {
-        Hall hallDataToUpdate = HallMapper.INSTANCE.mapHall(hallDto);
+    public HallDto update(@PathVariable final Long id, @RequestBody @Valid final HallDto hallDto) {
         return HallMapper.INSTANCE.mapHallDto(
-                hallService.update(id, hallDataToUpdate)
+                hallService.update(id, HallMapper.INSTANCE.mapHall(hallDto))
         );
     }
 
     @DeleteMapping(value = "/hall/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable final Long id){
         hallService.delete(id);
         return ResponseEntity.noContent().build();
     }

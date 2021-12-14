@@ -93,41 +93,6 @@ class TicketServiceImplTest {
     }
 
     @Test
-    void updateTicketTest(){
-        //given
-        Ticket TicketInDb = new Ticket();
-        TicketInDb.setId(id);
-        Optional<Ticket> TicketInDbOptional = Optional.of(TicketInDb);
-
-        when(ticketRepository.findById(id)).thenReturn(TicketInDbOptional);
-
-        Ticket dataToUpdate = new Ticket();
-        dataToUpdate.setPlace(place);
-
-        Ticket updatedTicket = new Ticket();
-        updatedTicket.setId(id);
-        updatedTicket.setPlace(place);
-
-        when(ticketRepository.save(updatedTicket)).thenReturn(updatedTicket);
-
-        //when
-        Ticket createdTicket = ticketService.update(id, dataToUpdate);
-
-        //then
-        verify(ticketRepository, times(1)).save(updatedTicket);
-    }
-
-    @Test
-    void updateTicketTest_WhenTicketNotExist(){
-        //given
-        when(ticketRepository.findById(id)).thenReturn(Optional.empty());
-        Ticket dataToUpdate = new Ticket();
-
-        //then
-        assertThrows(NoSuchElementException.class, () -> ticketService.update(id, dataToUpdate));
-    }
-
-    @Test
     void deleteTicketTest(){
         //given
         doNothing().when(ticketRepository).deleteById(id);

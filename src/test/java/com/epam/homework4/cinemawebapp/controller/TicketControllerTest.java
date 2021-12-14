@@ -106,32 +106,6 @@ class TicketControllerTest {
     }
 
     @Test
-    void updateTicketTest() throws Exception{
-        //given
-        TicketDto requestBodyTicketDtoToCreate = new TicketDto();
-        requestBodyTicketDtoToCreate.setPlace(10);
-        requestBodyTicketDtoToCreate.setOffer(new OfferDto());
-        requestBodyTicketDtoToCreate.setUser(new UserDto());
-        requestBodyTicketDtoToCreate.setPlace(10);
-        requestBodyTicketDtoToCreate.setPrice(BigDecimal.ZERO);
-
-        Ticket updatedTicket = TicketMapper.INSTANCE.mapTicket(requestBodyTicketDtoToCreate);
-
-        when(ticketService.update(id, updatedTicket)).thenReturn(updatedTicket);
-
-        //when
-        mockMvc.perform(put("/ticket/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestBodyTicketDtoToCreate)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.place").value(updatedTicket.getPlace()));
-
-        //then
-        verify(ticketService, times(1)).update(id, updatedTicket);
-    }
-
-    @Test
     void deleteTicketTest() throws Exception{
         //given
         doNothing().when(ticketService).delete(id);

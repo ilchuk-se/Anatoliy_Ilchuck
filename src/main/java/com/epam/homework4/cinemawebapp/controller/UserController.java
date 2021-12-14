@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+public final class UserController {
 
     private final UserService userService;
 
@@ -31,7 +31,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/user/{id}")
-    public UserDto getById(@PathVariable Long id){
+    public UserDto getById(@PathVariable final Long id){
         return UserMapper.INSTANCE.mapUserDto(
                 userService.getById(id)
         );
@@ -39,7 +39,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/sign")
-    public UserDto getAuthorized(@RequestBody UserAuthDto userAuthDto){
+    public UserDto getAuthorized(@RequestBody final UserAuthDto userAuthDto){
         return UserMapper.INSTANCE.mapUserDto(
                 userService.getAuthorized(
                         userAuthDto.getLogin(),
@@ -50,7 +50,7 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/user")
-    public UserDto create(@RequestBody @Valid UserDto userDto, @RequestParam String password){
+    public UserDto create(@RequestBody @Valid final UserDto userDto, @RequestParam final String password){
         User user = UserMapper.INSTANCE.mapUser(userDto);
         user.setPassword(password);
         return UserMapper.INSTANCE.mapUserDto(
@@ -60,19 +60,18 @@ public class UserController {
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/user/{id}")
-    public UserDto update(@PathVariable Long id, @RequestBody UserDto userDto){
-        User userDataToUpdate = UserMapper.INSTANCE.mapUser(userDto);
+    public UserDto update(@PathVariable final Long id, @RequestBody final UserDto userDto){
         return UserMapper.INSTANCE.mapUserDto(
                 userService.update(
                         id,
-                        userDataToUpdate
+                        UserMapper.INSTANCE.mapUser(userDto)
                 )
         );
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(value = "/user/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
+    public ResponseEntity<Void> delete(@PathVariable final Long id){
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }

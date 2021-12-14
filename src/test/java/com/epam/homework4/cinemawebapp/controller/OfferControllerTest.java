@@ -101,33 +101,6 @@ class OfferControllerTest {
     }
 
     @Test
-    void updateOfferTest() throws Exception{
-        //given
-        OfferDto requestBodyOfferDtoToUpdate = new OfferDto();
-        requestBodyOfferDtoToUpdate.setDate(date);
-        requestBodyOfferDtoToUpdate.setTime(Time.valueOf("17:00:00"));
-
-        FilmDto filmDto = new FilmDto();
-        filmDto.setId(id);
-        requestBodyOfferDtoToUpdate.setFilm(filmDto);
-
-        Offer updatedOffer = OfferMapper.INSTANCE.mapOffer(requestBodyOfferDtoToUpdate);
-
-        when(offerService.update(id, updatedOffer)).thenReturn(updatedOffer);
-
-        //when
-        mockMvc.perform(put("/offer/" + id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestBodyOfferDtoToUpdate)))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.date").value(updatedOffer.getDate().toString()));
-
-        //then
-        verify(offerService, times(1)).update(id, updatedOffer);
-    }
-
-    @Test
     void deleteOfferTest() throws Exception{
         //given
         doNothing().when(offerService).delete(id);

@@ -2,7 +2,6 @@ package com.epam.homework4.cinemawebapp.controller;
 
 import com.epam.homework4.cinemawebapp.dto.OfferDto;
 import com.epam.homework4.cinemawebapp.mapper.OfferMapper;
-import com.epam.homework4.cinemawebapp.model.Offer;
 import com.epam.homework4.cinemawebapp.service.OfferService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,13 +9,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class OfferController {
+public final class OfferController {
 
     private final OfferService filmOfferService;
 
@@ -30,7 +28,7 @@ public class OfferController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/offer/{id}")
-    public OfferDto getById(@PathVariable Long id) {
+    public OfferDto getById(@PathVariable final Long id) {
         return OfferMapper.INSTANCE.mapOfferDto(
                 filmOfferService.getById(id)
         );
@@ -38,24 +36,14 @@ public class OfferController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/offer")
-    public OfferDto create(@RequestBody OfferDto offerDto){
-        Offer offerToCreate = OfferMapper.INSTANCE.mapOffer(offerDto);
+    public OfferDto create(@RequestBody final OfferDto offerDto){
         return OfferMapper.INSTANCE.mapOfferDto(
-                filmOfferService.create(offerToCreate)
-        );
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping(value = "/offer/{id}")
-    public OfferDto update(@PathVariable Long id, @RequestBody @Valid OfferDto offerDto) {
-        Offer offerToUpdate = OfferMapper.INSTANCE.mapOffer(offerDto);
-        return OfferMapper.INSTANCE.mapOfferDto(
-                filmOfferService.update(id, offerToUpdate)
+                filmOfferService.create(OfferMapper.INSTANCE.mapOffer(offerDto))
         );
     }
 
     @DeleteMapping(value = "/offer/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
         filmOfferService.delete(id);
         return ResponseEntity.noContent().build();
     }

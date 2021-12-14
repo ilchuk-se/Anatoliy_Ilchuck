@@ -15,14 +15,13 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class HallServiceImpl implements HallService{
+public final class HallServiceImpl implements HallService{
 
     private final HallRepository hallRepository;
     private final OptionalChecker<Hall> hallOptionalChecker = new OptionalCheckerImpl();
 
     @Override
-    public Hall getById(Long id) {
-        log.info("getHall by id {}", id);
+    public Hall getById(final Long id) {
         return hallOptionalChecker.getValueIfPresent(
                 hallRepository.findById(id),
                 "Hall with id: " + id + " not found."
@@ -31,34 +30,30 @@ public class HallServiceImpl implements HallService{
 
     @Override
     public List<Hall> getAll() {
-        log.info("get all Halls");
         return Lists.newArrayList(
                 hallRepository.findAll()
         );
     }
 
     @Override
-    public Hall create(Hall hall) {
-        log.info("createUser with name {}", hall.getName());
+    public Hall create(final Hall hall) {
         return hallRepository.save(hall);
     }
 
-    @Override
-    public Hall update(Long id, Hall hall) {
-        log.info("updateUser with name {}", hall.getName());
+    private Hall editHall(final Hall source, final Hall target){
+        source.setId(target.getId());
+        return target;
+    }
 
-        Hall hallToUpdate = hallOptionalChecker.getValueIfPresent(
-                hallRepository.findById(id),
-                "Hall with id: " + id + " not found and can not be updated."
+    @Override
+    public Hall update(final Long id,final Hall hall) {
+        return hallRepository.save(
+                editHall(hall, getById(id))
         );
-        hall.setId(hallToUpdate.getId());
-
-        return hallRepository.save(hall);
     }
 
     @Override
-    public void delete(Long id) {
-        log.info("deleteHall with id {}", id);
+    public void delete(final Long id) {
         hallRepository.deleteById(id);
     }
 }

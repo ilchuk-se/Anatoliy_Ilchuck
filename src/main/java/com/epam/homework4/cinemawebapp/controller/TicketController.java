@@ -2,7 +2,6 @@ package com.epam.homework4.cinemawebapp.controller;
 
 import com.epam.homework4.cinemawebapp.dto.TicketDto;
 import com.epam.homework4.cinemawebapp.mapper.TicketMapper;
-import com.epam.homework4.cinemawebapp.model.Ticket;
 import com.epam.homework4.cinemawebapp.service.TicketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class TicketController{
+public final class TicketController{
 
     private final TicketService ticketService;
 
@@ -30,7 +29,7 @@ public class TicketController{
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/ticket/{id}")
-    public TicketDto getById(@PathVariable Long id) {
+    public TicketDto getById(@PathVariable final Long id) {
         return TicketMapper.INSTANCE.mapTicketDto(
                 ticketService.getById(id)
         );
@@ -38,24 +37,14 @@ public class TicketController{
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/ticket")
-    public TicketDto create(@RequestBody @Valid TicketDto ticketDto){
-        Ticket ticketToCreate = TicketMapper.INSTANCE.mapTicket(ticketDto);
+    public TicketDto create(@RequestBody @Valid final TicketDto ticketDto){
         return  TicketMapper.INSTANCE.mapTicketDto(
-                ticketService.create(ticketToCreate)
-        );
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PutMapping(value = "/ticket/{id}")
-    public TicketDto update(@PathVariable Long id, @RequestBody @Valid TicketDto ticketDto)  {
-        Ticket ticketToUpdate = TicketMapper.INSTANCE.mapTicket(ticketDto);
-        return TicketMapper.INSTANCE.mapTicketDto(
-                ticketService.update(id, ticketToUpdate)
+                ticketService.create(TicketMapper.INSTANCE.mapTicket(ticketDto))
         );
     }
 
     @DeleteMapping(value = "/ticket/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
         ticketService.delete(id);
         return ResponseEntity.noContent().build();
     }

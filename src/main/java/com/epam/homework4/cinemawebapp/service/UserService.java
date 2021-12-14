@@ -5,15 +5,15 @@ import com.epam.homework4.cinemawebapp.model.User;
 import java.util.List;
 
 public interface UserService {
-    User getById(Long id);
+    User getById(final Long id);
 
-    User getAuthorized(String login, String password);
+    User getAuthorized(final String login,final String password);
 
     List<User> getAll();
 
-    User create(User user);
+    User create(final User user);
 
-    User update(Long id, User user);
+    User update(final Long id,final User user);
 
-    void delete(Long id);
+    void delete(final Long id);
 }

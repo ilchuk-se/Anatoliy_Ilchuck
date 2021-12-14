@@ -16,13 +16,13 @@ import java.util.NoSuchElementException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public final class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final OptionalChecker<User> userOptionalChecker = new OptionalCheckerImpl();
 
     @Override
-    public User getById(Long id) throws NoSuchElementException{
+    public User getById(final Long id) throws NoSuchElementException{
         return userOptionalChecker.getValueIfPresent(
                 userRepository.findById(id),
                 "User with id: " + id + " was not found."
@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getAuthorized(String login, String password) {
+    public User getAuthorized(final String login,final String password) {
         return userRepository.findByLoginAndPassword(login, password);
     }
 
@@ -40,19 +40,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User create(User user) {
+    public User create(final User user) {
         return userRepository.save(user);
     }
 
-    @Override
-    public User update(Long id, User user) {
-        User userToUpdate = userOptionalChecker.getValueIfPresent(
-                userRepository.findById(id),
-                "User with id: " + id + " not found and can not be updated."
-        );
+    private User editUser(final User source,final User target){
+        target.setName(source.getName());
+        target.setPassword(source.getPassword());
+        return target;
+    }
 
-        userToUpdate.setName(user.getName());
-        return userRepository.save(userToUpdate);
+    @Override
+    public User update(final Long id,final User user) {
+        return userRepository.save(
+                editUser(user, getById(id))
+        );
     }
 
     @Override

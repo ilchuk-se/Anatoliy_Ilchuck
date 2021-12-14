@@ -5,13 +5,13 @@ import com.epam.homework4.cinemawebapp.model.Hall;
 import java.util.List;
 
 public interface HallService {
-    Hall getById(Long id);
+    Hall getById(final Long id);
 
     List<Hall> getAll();
 
-    Hall create(Hall hall);
+    Hall create(final Hall hall);
 
-    Hall update(Long id, Hall hall);
+    Hall update(final Long id,final Hall hall);
 
-    void delete(Long id);
+    void delete(final Long id);
 }

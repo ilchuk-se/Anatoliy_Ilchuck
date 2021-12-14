@@ -5,13 +5,11 @@ import com.epam.homework4.cinemawebapp.model.Offer;
 import java.util.List;
 
 public interface OfferService {
-    Offer getById(Long id);
+    Offer getById(final Long id);
 
     List<Offer> getAll();
 
-    Offer create(Offer offer);
+    Offer create(final Offer offer);
 
-    Offer update(Long id, Offer offer);
-
-    void delete(Long id);
+    void delete(final Long id);
 }

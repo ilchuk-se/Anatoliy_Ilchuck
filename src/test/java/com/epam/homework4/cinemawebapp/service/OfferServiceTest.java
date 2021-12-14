@@ -92,41 +92,6 @@ class OfferServiceTest {
     }
 
     @Test
-    void updateOfferTest(){
-        //given
-        Offer OfferInDb = new Offer();
-        OfferInDb.setId(id);
-        Optional<Offer> OfferInDbOptional = Optional.of(OfferInDb);
-
-        when(OfferRepository.findById(id)).thenReturn(OfferInDbOptional);
-
-        Offer dataToUpdate = new Offer();
-        dataToUpdate.setDate(date);
-
-        Offer updatedOffer = new Offer();
-        updatedOffer.setId(id);
-        updatedOffer.setDate(date);;
-
-        when(OfferRepository.save(updatedOffer)).thenReturn(updatedOffer);
-
-        //when
-        Offer createdOffer = OfferService.update(id, dataToUpdate);
-
-        //then
-        verify(OfferRepository, times(1)).save(updatedOffer);
-    }
-
-    @Test
-    void updateOfferTest_WhenOfferNotExist(){
-        //given
-        when(OfferRepository.findById(id)).thenReturn(Optional.empty());
-        Offer dataToUpdate = new Offer();
-
-        //then
-        assertThrows(NoSuchElementException.class, () -> OfferService.update(id, dataToUpdate));
-    }
-
-    @Test
     void deleteOfferTest(){
         //given
         doNothing().when(OfferRepository).deleteById(id);

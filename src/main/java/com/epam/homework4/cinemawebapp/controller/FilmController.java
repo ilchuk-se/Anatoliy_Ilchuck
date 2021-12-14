@@ -2,7 +2,6 @@ package com.epam.homework4.cinemawebapp.controller;
 
 import com.epam.homework4.cinemawebapp.dto.FilmDto;
 import com.epam.homework4.cinemawebapp.mapper.FilmMapper;
-import com.epam.homework4.cinemawebapp.model.Film;
 import com.epam.homework4.cinemawebapp.service.FilmService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class FilmController {
+public final class FilmController {
 
     private final FilmService filmService;
 
@@ -30,7 +29,7 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/film/{id}")
-    public FilmDto getById(@PathVariable Long id) {
+    public FilmDto getById(@PathVariable final Long id) {
         return FilmMapper.INSTANCE.mapFilmDto(
                 filmService.getById(id)
         );
@@ -38,24 +37,22 @@ public class FilmController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(value = "/film")
-    public FilmDto create(@RequestBody FilmDto filmDto){
-        Film film = FilmMapper.INSTANCE.mapFilm(filmDto);
+    public FilmDto create(@RequestBody final FilmDto filmDto){
         return FilmMapper.INSTANCE.mapFilmDto(
-                filmService.create(film)
+                filmService.create(FilmMapper.INSTANCE.mapFilm(filmDto))
         );
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PutMapping(value = "/film/{id}")
-    public FilmDto update(@PathVariable Long id, @RequestBody @Valid FilmDto filmDto) {
-        Film filmDataToUpdate = FilmMapper.INSTANCE.mapFilm(filmDto);
+    public FilmDto update(@PathVariable final Long id, @RequestBody @Valid final FilmDto filmDto) {
         return FilmMapper.INSTANCE.mapFilmDto(
-                filmService.update(id, filmDataToUpdate)
+                filmService.update(id, FilmMapper.INSTANCE.mapFilm(filmDto))
         );
     }
 
     @DeleteMapping(value = "/film/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable final Long id) {
         filmService.delete(id);
         return ResponseEntity.noContent().build();
     }
